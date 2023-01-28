@@ -1,0 +1,718 @@
+****A: 滑雪
+----1ms
+#include <iostream>
+#include <cstdio>
+#include <string>
+#define ll long long
+
+using namespace std;
+int n,m,a[105][105],dp[105][105];
+int b[4][2]={{-1,0},{0,1},{1,0},{0,-1}};
+
+int dfs(int x,int y)
+{
+    if(dp[x][y])
+        return dp[x][y];
+    int ma=0;
+    for(int i=0;i<4;i++)
+    {
+        int nx=x+b[i][0],ny=y+b[i][1];
+        if(nx<0||nx>=n||ny<0||ny>=m)
+            continue;
+        if(a[nx][ny]<a[x][y])
+        {
+            int s=dfs(nx,ny);
+            ma=max(ma,s);
+        }
+    }
+    dp[x][y]=ma+1;
+    return dp[x][y];
+}
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    cin  >> n >> m;
+    for(int i=0;i<n;i++)
+        for(int j=0;j<m;j++)
+            cin >> a[i][j];
+    int res=0;
+    for(int i=0;i<n;i++)
+    {
+        for(int j=0;j<m;j++)
+        {
+            dp[i][j]=dfs(i,j);
+            res=max(res,dp[i][j]);
+        }
+    }
+    cout << res << endl;
+    return 0;
+}
+
+
+
+
+----1ms
+/*
+Michael喜欢滑雪百这并不奇怪， 因为滑雪的确很刺激。可是为了获得速度，滑的区域必须向下倾斜，而且当你滑到坡底，你不得不再次走上坡或者等待升降机来载你。Michael想知道载一个区域中最长底滑坡。区域由一个二维数组给出。数组的每个数字代表点的高度。下面是一个例子
+
+1 2 3 4 5
+
+16 17 18 19 6
+
+15 24 25 20 7
+
+14 23 22 21 8
+
+13 12 11 10 9
+
+一个人可以从某个点滑向上下左右相邻四个点之一，当且仅当高度减小。在上面的例子中，一条可滑行的滑坡为24-17-16-1。当然25-24-23-…-3-2-1更长。事实上，这是最长的一条。Input输入的第一行表示区域的行数R和列数C(1 <= R,C <= 100)。下面是R行，每行有C个整数，代表高度h，0<=h<=10000。Output输出最长区域的长度。
+Sample Input
+5 5
+1 2 3 4 5
+16 17 18 19 6
+15 24 25 20 7
+14 23 22 21 8
+13 12 11 10 9
+Sample Output
+25
+*/
+#include<iostream>
+#include<cstdio>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+int n,m;
+int store[110][110];
+int a[110][110];
+int to[4][2]={{1,0},{-1,0},{0,-1},{0,1}};
+bool judge(int x,int y){
+    if(x>=1&&x<=n&&y>=1&&y<=m)
+    return 1;
+    else
+    return 0;
+}
+int find(int x,int y) {
+    if(store[x][y])  return store[x][y];
+    int d=1,k,tx,ty;
+    for(k = 0; k < 4; k++){
+        tx = x + to[k][0];
+        ty = y + to[k][1];
+        if (judge(tx,ty)&&a[x][y]>a[tx][ty]) d=max(find(tx,ty)+1,d);   
+    }
+    store[x][y]=d;  
+    return d;
+}
+int main(){
+    while(~scanf("%d%d",&n,&m)){
+  	memset(a,0,sizeof(a));
+        memset(store,0,sizeof(store)); //清空
+        int i,j;
+        for(i=1;i<=n;i++)
+            for(j=1;j<=m;j++)
+                scanf("%d",&a[i][j]);
+        int s=0;
+        for(i=1;i<=n;i++)
+            for(j=1;j<=m;j++)
+                s=max(find(i,j), s);
+        cout << s << endl;
+    }
+    return 0;
+}
+
+
+----1ms
+#include<stdio.h>
+#include<string.h>
+#include<algorithm>
+using namespace std;
+int n,m;
+int dp[110][110];
+int a[110][110];
+int to[4][2]={{1,0},{-1,0},{0,-1},{0,1}};
+bool judge(int x,int y)  //判断是否在范围内
+{
+    if(x>=1&&x<=n&&y>=1&&y<=m)
+    return 1;
+    else
+    return 0;
+}
+int find(int x,int y)     //找出从该点开始能进行的最大次数
+{
+    if(dp[x][y])       
+    return dp[x][y];
+    int d=1,k,tx,ty;
+    for(k=0;k<4;k++)
+    {
+        tx=x+to[k][0];
+        ty=y+to[k][1];
+        if(judge(tx,ty)&&a[x][y]>a[tx][ty]) 
+        d=max(find(tx,ty)+1,d);   
+    }
+    dp[x][y]=d;  
+    return d;
+}
+int main()
+{
+    while(~scanf("%d%d",&n,&m))
+    {
+  	memset(a,0,sizeof(a));
+        memset(dp,0,sizeof(dp));
+        int i,j;
+        for(i=1;i<=n;i++)
+         for(j=1;j<=m;j++)
+            scanf("%d",&a[i][j]);
+        int s=0;
+        for(i=1;i<=n;i++)
+            for(j=1;j<=m;j++)
+            s=max(find(i,j), s);
+        printf("%d\n",s);
+    }
+    return 0;
+}
+
+****B: 最佳加法表达式
+----3ms
+#include <cstring>
+#include <cstdio>
+#include <algorithm>
+
+constexpr int intmax(80);
+
+
+struct BigInt
+{
+    char num[intmax];
+    
+    void clear(char* val, int len)
+    {
+        memset(val, '\0', len * sizeof(char));
+    }
+
+    void reverse(char* val)
+    {
+        std::reverse(val, val + strlen(val));
+    }
+
+    int add_count(char v1, char v2)
+    {
+        if (v1 == '\0') return v2 - '0';
+        if (v2 == '\0') return v1 - '0';
+        return v1 + v2 - (2 * '0');
+    }
+
+    void add(char* a, char* b, char* ans)
+    {
+        reverse(a);
+        reverse(b);
+
+        int n{0};
+        int count{0};
+        int last{0};
+
+        while (!(a[n] == '\0' && b[n] == '\0'))
+        {
+            count = add_count(a[n], b[n]) + last;
+            ans[n] = count % 10 + '0';
+            last = count / 10;
+            ++n;
+        }
+        if (last != 0) ans[n] = last + '0';
+        reverse(a);
+        reverse(b);
+        reverse(ans);
+    }
+
+    void set(const char* val)
+    {
+        clear(num, intmax);
+        strcpy(num, val);
+    }
+
+    BigInt()
+    {
+        clear(num, intmax);
+        set("N");
+    }
+
+    BigInt operator+(BigInt& b)
+    {
+        BigInt ans{};
+        add(num, b.num, ans.num);
+        return ans; 
+    }
+
+    bool operator<(BigInt& b)
+    {
+        if (num[0] == 'X') return false;
+        if (b.num[0] == 'X') return true;
+        if (strlen(num) < strlen(b.num)) return true;
+        if (strlen(num) == strlen(b.num))
+        {
+            int n{};
+            while(num[n] != '\0')
+            {
+                if (num[n] < b.num[n]) return true;
+                else if (num[n] > b.num[n]) return false;
+                ++n;
+            }
+        }  
+        return false;      
+    }
+};
+
+class Solution
+{
+public:
+    char num[intmax];
+
+private:
+    BigInt getval(int i, int j)
+    {
+        char temp[intmax];
+        memcpy(temp, num + i, (j - i + 1) * sizeof(char));
+        temp[j - i + 1] = '\0';
+        BigInt res;
+        res.set(temp);
+        return res;
+    }
+public:
+    BigInt dp[intmax][intmax];
+    Solution()
+    {}
+
+    BigInt findMin(int n, int m)
+    {
+        if (dp[n][m].num[0] != 'N') return dp[n][m];
+
+        BigInt ans;
+        BigInt x;
+        BigInt y;
+        BigInt z;
+
+        ans.set("X");
+        if (n < m) return dp[n][m] = ans;
+        if (m == 0) return dp[n][m] = getval(0, n);
+        for (int i{1}; n - i >= m - 1; ++i)
+        {
+            x = findMin(n - i, m - 1);
+            y = getval(n - i + 1, n);
+            z = x + y;
+            ans = (z < ans ? z : ans);
+        }
+        return dp[n][m] = ans;
+    }
+
+    void clear()
+    {
+        for (int i{0}; i < intmax; ++i)
+            for (int j{0}; j < intmax; ++j)
+                dp[i][j].set("N");
+    }
+};
+
+int main()
+{
+    int m;
+    Solution s{};
+    while (scanf("%d%s", &m, s.num) != EOF)
+    {
+        s.clear();
+
+        printf("%s\n", s.findMin(strlen(s.num) - 1, m).num);
+    }
+    return 0;
+}
+
+
+----4ms
+#include <bits/stdc++.h>
+using namespace std;
+class mystring
+{
+	public:
+		string s;
+	mystring(string ss)
+	{
+		s = ss;
+	}
+	mystring ()
+	{
+
+	}
+	mystring operator+(mystring&x)
+	{
+		mystring m;
+		string s1(s.rbegin(), s.rend());
+		string s2(x.s.rbegin(), x.s.rend());
+		if(s1.size()<s2.size())
+		{
+			int carry = 0;
+			for (int i = 0; i < s1.size();i++)
+			{
+				s2[i] += s1[i] - 48 + carry;
+				if(s2[i]>=58)
+				{
+					s2[i] -= 10;
+					carry = 1;
+				}
+				else
+					carry = 0;
+			}
+			for (int i = s1.size(); i < s2.size();i++)
+			{
+				s2[i] +=carry;
+				if(s2[i]>=58)
+				{
+					s2[i] -= 10;
+					carry = 1;
+				}
+				else
+				{
+					carry = 0;
+					break;
+				}	
+			}
+			if(carry)
+				s2.push_back('1');
+			string tmp(s2.rbegin(), s2.rend());
+			m.s = tmp;
+		}
+		else
+		{
+			int carry = 0;
+			for (int i = 0; i < s2.size();i++)
+			{
+				s1[i] += s2[i] - 48 + carry;
+				if(s1[i]>=58)
+				{
+					s1[i] -= 10;
+					carry = 1;
+				}
+				else
+					carry = 0;
+			}
+			for (int i = s2.size(); i < s1.size();i++)
+			{
+				s1[i] +=carry;
+				if(s1[i]>=58)
+				{
+					s1[i] -= 10;
+					carry = 1;
+				}
+				else
+				{
+					carry = 0;
+					break;
+				}	
+			}
+			if(carry)
+				s1.push_back('1');
+			string tmp(s1.rbegin(), s1.rend());
+			m.s = tmp;
+		}
+		return m;
+	}
+	bool operator<(mystring x)
+	{
+		if(s.size()!=x.s.size())
+		return s.size()<x.s.size();
+		return s < x.s;
+	}
+};
+mystring dp[60][60];//放多少个加号<=n，坐标到哪 <sx.size()
+int num;
+int main()
+{
+	int n;
+	while(cin>>n)
+	{
+		getchar();
+		string sx;		
+		getline(cin, sx);
+			num=sx.size()/(n+1);//平均每段的长度
+		num++;//每段最多位数 
+		num++;//999<1000 
+		num++;//最不利的最小值的位数也会比这个数小 
+		mystring m0(sx);
+		for(int i=0;i<60;i++)
+			for(int j=0;j<60;j++)
+			dp[i][j].s="A";
+		for (int j = 0; j < sx.size();j++)
+		{
+			string t(sx, 0, j+1);
+			mystring tmp(t);
+			dp[0][j] = tmp;
+		}
+			for (int i = 1; i <= n; i++)
+			{
+				for (int j = i; j < sx.size(); j++)//从坐标i到坐标size-1 
+				{
+					for (int k = i; k <= j; k++)
+					{	
+						if(j-k+1>num)
+						continue;				
+						string t(sx, k, j-k+1);
+						mystring ss(t);
+						mystring tm;
+						tm=ss + dp[i - 1][k-1];
+						if (dp[i][j].s=="A"||tm< dp[i][j])
+						{
+							dp[i][j] = tm;
+						}
+							
+					}
+				}
+			}
+
+			cout << dp[n][sx.size()-1].s<<endl;
+	}
+}
+
+----4ms
+#include<bits/stdc++.h>
+using namespace std;
+string quling(string a)
+{
+	while(a[0]=='0'&&a.length()>1)
+		a=a.substr(1,a.length()-1);
+	return a;
+}
+string myplus(string a,string b)
+{
+	if(a.length()>b.length())
+	{
+		string c="0"+a;
+		int la=a.length();
+		int lb=b.length();
+		int lc=c.length();
+		for(int i=0;i<lb;i++)
+		{
+			c[lc-1-i]=c[lc-1-i]-'0'+b[lb-1-i];
+		}
+		for(int i=0;i<la;i++)
+		{
+			while(c[lc-1-i]>'9')
+			{
+				c[lc-1-i]-=10;
+				c[lc-2-i]+=1;
+			}
+		}
+		if(c[0]=='0')return c.substr(1,lc-1);
+		else return c;
+	}
+	else
+	{
+		string temp=a;
+		a=b;
+		b=temp;
+		string c="0"+a;
+		int la=a.length();
+		int lb=b.length();
+		int lc=c.length();
+		for(int i=0;i<lb;i++)
+		{
+			c[lc-1-i]=c[lc-1-i]-'0'+b[lb-1-i];
+		}
+		for(int i=0;i<la;i++)
+		{
+			while(c[lc-1-i]>'9')
+			{
+				c[lc-1-i]-=10;
+				c[lc-2-i]+=1;
+			}
+		}
+		return quling(c);
+	}
+}
+string origin;
+string save[100][100];
+string mycompute(int m,int n)
+{
+	if(save[m][n]!="a")return save[m][n];
+	else if(m==0)
+	{
+		save[m][n]=origin.substr(0,n);
+		return save[m][n];
+	}
+	else if(n<m+1)
+	{
+		save[m][n]="99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999";
+		return save[m][n];
+	}
+	else
+	{
+		string min="9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999";
+		for(int i=m;i<n;i++)
+		{
+			string temp=mycompute(m-1,i);
+			string temp1=myplus(temp,origin.substr(i,n-i));
+			if(temp1.length()<min.length())min=temp1;
+			else if(temp1.length()==min.length())
+				if(temp1<min)min=temp1;
+		}
+		save[m][n]=min;
+		return save[m][n];	
+	}
+}
+int main()
+{
+	int m;
+	while(cin>>m)
+	{
+		for(int i=0;i<100;i++)
+		for(int j=0;j<100;j++)
+			save[i][j]="a";
+		cin>>origin;
+		cout<<mycompute(m,origin.length())<<endl;
+	}
+}
+
+****C: 怪盗基德的滑翔翼
+----1ms
+#include<cstdio>
+#include<iostream>
+using namespace std;
+int t,n,ans,a[105],dp[105]; //dp数组记录状态
+int main()
+{
+    scanf("%d",&t); //输入t
+    for(int i=1;i<=t;i++)//输入t组测试数据
+    {
+        scanf("%d",&n); //输入n
+        ans=0; //将最大值赋为0
+        for(int i=1;i<=n;i++)  //输入n个数
+        {
+            scanf("%d",&a[i]);
+            dp[i]=1; //在输入的同时就将dp数组赋初值
+        }
+        for(int i=2;i<=n;i++) //求最长上升子序列的长度
+        {
+            for(int j=1;j<i;j++)
+            {
+                if(a[i]>a[j])  //判断条件
+                {
+                    dp[i]=max(dp[i],dp[j]+1); //最长上升子序列的状态转移方程
+                }
+            }
+        }
+        for(int i=1;i<=n;i++)  //比较出最长的长度
+        {
+            ans=max(ans,dp[i]);
+        }
+        for(int i=1;i<=n;i++) 
+        //将dp数组重新清为1，防止两个状态互相干扰
+        {
+            dp[i]=1;
+        }
+        for(int i=n-1;i>=1;i--) //求最长下降子序列的长度
+        {
+            for(int j=n;j>i;j--)
+            {
+                if(a[i]>a[j])  //判断条件
+                {
+                    dp[i]=max(dp[i],dp[j]+1); //状态转移方程一模一样
+                }
+            }
+        }
+        for(int i=1;i<=n;i++) 
+        {
+            ans=max(ans,dp[i]); //求出最大值
+        }
+        printf("%d\n",ans); //输出最大值
+    }
+    return 0; //结束啦~
+}
+
+----1ms
+/*
+描述
+怪盗基德是一个充满传奇色彩的怪盗，专门以珠宝为目标的超级盗窃犯。而他最为突出的地方，就是他每次都能逃脱中村警部的重重围堵，而这也很大程度上是多亏了他随身携带的便于操作的滑翔翼。
+有一天，怪盗基德像往常一样偷走了一颗珍贵的钻石，不料却被柯南小朋友识破了伪装，而他的滑翔翼的动力装置也被柯南踢出的足球破坏了。不得已，怪盗基德只能操作受损的滑翔翼逃脱。
+
+假设城市中一共有N幢建筑排成一条线，每幢建筑的高度各不相同。初始时，怪盗基德可以在任何一幢建筑的顶端。他可以选择一个方向逃跑，但是不能中途改变方向（因为中森警部会在后面追击）。因为滑翔翼动力装置受损，他只能往下滑行（即：只能从较高的建筑滑翔到较低的建筑）。他希望尽可能多地经过不同建筑的顶部，这样可以减缓下降时的冲击力，减少受伤的可能性。请问，他最多可以经过多少幢不同建筑的顶部（包含初始时的建筑）？
+
+输入
+输入数据第一行是一个整数K（K < 100），代表有K组测试数据。
+每组测试数据包含两行：第一行是一个整数N(N < 100)，代表有N幢建筑。第二行包含N个不同的整数，每一个对应一幢建筑的高度h（0 < h < 10000），按照建筑的排列顺序给出。
+输出
+对于每一组测试数据，输出一行，包含一个整数，代表怪盗基德最多可以经过的建筑数量。
+样例输入
+3
+8
+300 207 155 299 298 170 158 65
+8
+65 158 170 298 299 155 207 300
+10
+2 1 3 4 5 6 7 8 9 10
+样例输出
+6
+6
+9
+*/
+#include<iostream>
+#include<cstdio>
+#include<cmath>
+#include<algorithm>
+#include<cstring>
+using namespace std;
+int h[102];
+int f[102];
+int main(){
+	int n;
+	scanf("%d",&n);
+	for(int q=0;q<n;q++){
+		int i;
+		scanf("%d",&i);
+		for(int j=1;j<=i;j++)
+			scanf("%d",&h[j]);
+		int maxx=0;
+		for(int j=1;j<=i;j++){
+			int maxn=0;
+			for(int k=1;k<j;k++)
+				if(f[k]>maxn&&h[k]>h[j])
+					maxn=f[k];
+			f[j]=maxn+1;
+			if(f[j]>maxx)
+				maxx=f[j];
+		}
+		int maxc=0;
+		for(int j=1;j<=i;j++){
+			int maxn=0;
+			for(int k=1;k<j;k++)
+				if(f[k]>maxn&&h[k]<h[j])
+					maxn=f[k];
+			f[j]=maxn+1;
+			if(f[j]>maxc)
+				maxc=f[j];
+		}
+		if(maxc>maxx)
+			maxx=maxc;
+		printf("%d\n",maxx);
+	}
+	return 0;
+}
+
+----1ms
+#include<bits/stdc++.h>
+using namespace std;
+int T,n,a[1111],dp[1111][2],ans;
+int main(){
+	scanf("%d",&T);
+	while(T--){
+		scanf("%d",&n),ans=0;
+		for(int i=1;i<=n;i++){
+			scanf("%d",a+i);
+			dp[i][0]=dp[i][1]=1;
+			for(int j=1;j<i;j++){
+				if(a[j]<a[i]) dp[i][0]=max(dp[j][0]+1,dp[i][0]);
+				if(a[j]>a[i]) dp[i][1]=max(dp[j][1]+1,dp[i][1]);
+			}
+			ans=max(ans,max(dp[i][0],dp[i][1]));
+		}
+		printf("%d\n",ans);
+	}
+}
+
+

@@ -1,0 +1,631 @@
+****A: Boolean Expressions
+----0ms
+#include <iostream>
+using namespace std;
+ 
+bool factor_value();
+bool term_value();
+bool expression_value();
+void DelSpace();
+ 
+int main()
+{
+    // freopen("test.rtf", "r", stdin);
+    int count = 1;
+    do
+    {
+        if (expression_value())
+            cout << "Expression " << count << ": V" << endl;
+        else
+            cout << "Expression " << count << ": F" << endl;
+        count++;
+        cin.get();
+    } while (cin.peek() != EOF);
+    return 0;
+}
+ 
+bool expression_value()
+{
+    bool result = term_value();
+    while (1)
+    {
+        DelSpace();
+        char op = cin.peek();
+        if (op == '|')
+        {
+            cin.get();
+            result = (term_value() || result);
+        }
+        else
+            break;
+    }
+    return result;
+}
+ 
+bool term_value()
+{
+    bool result = factor_value();
+    while (1)
+    {
+        DelSpace();
+        char op = cin.peek();
+        if (op == '&')
+        {
+            cin.get();
+            result = factor_value() && result;
+        }
+        else
+            break;
+    }
+    return result;
+}
+ 
+bool factor_value()
+{
+    bool result;
+    DelSpace();
+    char c = cin.get();
+    if (c == '(')
+    {
+        result = expression_value();
+        DelSpace();
+        char temp = cin.get();
+    }
+    else if (c == '!')
+        result = !factor_value();
+    else
+    {
+        if (c == 'V')
+            result = true;
+        else if (c == 'F')
+            result = false;
+    }
+    return result;
+}
+ 
+void DelSpace()
+{
+    while (cin.peek() == ' ')
+        cin.get();
+}
+
+
+----0ms
+#include <iostream>
+#include <cstdio>
+#include <cstring>
+using namespace std;
+char s[100001]={0};
+int my_cnt=0;
+bool expression_bool();
+bool term_bool();
+bool factor_bool();
+ 
+bool expression_bool(){//求一个表达式的值
+	bool result=term_bool();//求第一项的值
+	bool more=true;
+	while(more){
+		char op=s[my_cnt];//看一个字符,不取走
+		if(op=='&'||op=='|'){
+			my_cnt++;//从数组中取走一个字符
+			bool value=term_bool();
+			if(op=='&') result=result&value;
+			else result=result|value;
+		}else{
+			more=false;
+		}
+	}
+ 
+	return result;
+}
+ 
+bool term_bool(){//因为!的运算优先级更高,所以把!xxx也当成一个项
+	bool result;
+	char op=s[my_cnt];
+	if(op=='!'){
+		my_cnt++;
+		result=!factor_bool();
+	}else{
+		result=factor_bool();
+	}
+ 
+	return result;
+}
+ 
+bool factor_bool(){//求一个因子的值
+	bool result;
+	char c=s[my_cnt];
+	if(c=='('){//如果该因子是由括号括起来的表达式组成的话
+		my_cnt++;
+		result=expression_bool();
+		my_cnt++;
+	}else if(c=='V'){
+		result=true;
+		my_cnt++;
+	}else if(c=='F'){
+		result=false;
+		my_cnt++;
+	}else if(c=='!'){//出现了!,说明读取到了一个因子
+		result=term_bool();
+	}
+ 
+	return result;
+}
+ 
+void oj_3_1(){
+	int k=0;
+	while(cin.getline(s,100000)){
+		char t[100001]={0};
+		int len=strlen(s);
+		for(int i=0,k=0;i<len;++i){
+			if(s[i]!=' '){
+				t[k++]=s[i];
+			}
+		}
+ 
+		len=strlen(t);
+		for(int i=0;i<len;++i){
+			s[i]=t[i];
+		}
+		s[len]='\0';
+		
+		//到这里输入中的空格已经被去除干净了
+		cout<<"Expression "<<++k<<": "<<(expression_bool()?"V":"F")<<endl;
+		//初始化工作
+		my_cnt=0;
+		memset(s,0,100000);
+	}
+ 
+}
+ 
+int main(){
+	oj_3_1();
+	return 0;
+}
+
+----0ms
+#include <iostream>
+#include <cstdio>
+#include <cstring>
+using namespace std;
+char s[100001]={0};
+int my_cnt=0;
+bool expression_bool();
+bool term_bool();
+bool factor_bool();
+ 
+bool expression_bool(){
+	bool result=term_bool();
+	bool more=true;
+	while(more){
+		char op=s[my_cnt];
+		if(op=='&'||op=='|'){
+			my_cnt++;
+			bool value=term_bool();
+			if(op=='&') result=result&value;
+			else result=result|value;
+		}else{
+			more=false;
+		}
+	}
+ 
+	return result;
+}
+ 
+bool term_bool(){
+	bool result;
+	char op=s[my_cnt];
+	if(op=='!'){
+		my_cnt++;
+		result=!factor_bool();
+	}else{
+		result=factor_bool();
+	}
+ 
+	return result;
+}
+ 
+bool factor_bool(){
+	bool result;
+	char c=s[my_cnt];
+	if(c=='('){
+		my_cnt++;
+		result=expression_bool();
+		my_cnt++;
+	}else if(c=='V'){
+		result=true;
+		my_cnt++;
+	}else if(c=='F'){
+		result=false;
+		my_cnt++;
+	}else if(c=='!'){
+		result=term_bool();
+	}
+ 
+	return result;
+}
+
+ 
+int main(){
+	int k=0;
+	while(cin.getline(s,100000)){
+		char t[100001]={0};
+		int len=strlen(s);
+		for(int i=0,k=0;i<len;++i){
+			if(s[i]!=' '){
+				t[k++]=s[i];
+			}
+		}
+ 
+		len=strlen(t);
+		for(int i=0;i<len;++i){
+			s[i]=t[i];
+		}
+		s[len]='\0';
+		
+		cout<<"Expression "<<++k<<": "<<(expression_bool()?"V":"F")<<endl;
+		my_cnt=0;
+		memset(s,0,100000);
+	}
+ 
+	return 0;
+}
+
+****B: 文件结构“图”
+----0ms
+#include <iostream>
+#include <set>
+using namespace std;
+int group = 1; // now group
+int nowlayer = 0;
+bool havebeginprint;
+bool stopscan = false;
+void print()
+{
+    if (havebeginprint == false) 
+    {
+        havebeginprint = true; 
+        if (group != 1)
+        {
+            cout << endl;
+        }
+        cout << "DATA SET " << group << ":" << endl
+             << "ROOT" << endl;
+    }
+}
+void dgfun()
+{
+    string str;        
+    set<string> files; 
+    while (cin >> str)
+    {
+        switch (str[0]) 
+        {
+        case '#':  // stop cin data
+            stopscan = true; // break 
+            return;
+        case 'f':
+            print();
+            files.insert(str); 
+            break;
+        case 'd':
+            print();
+            nowlayer++; 
+            for (int i = 0; i < nowlayer; i++)
+            {
+                cout << "|     ";
+            }
+            cout << str << endl; 
+            dgfun(); 
+            break;
+        case ']':
+            for (set<string>::iterator i = files.begin(); i != files.end(); i++)
+            {
+                for (int j = 0; j < nowlayer; j++) // files output
+                {
+                    cout << "|     ";
+                }
+                cout << *i << endl;
+            }
+            nowlayer--; // return old layer huisu 
+            return;
+        case '*': // output root's file
+            for (set<string>::iterator i = files.begin(); i != files.end(); i++)
+            {
+                cout << *i << endl;
+            }
+            group++;
+            return;
+        }
+    }
+}
+int main()
+{
+    while (!stopscan)
+    {
+        havebeginprint = false;
+        dgfun();
+    }
+    return 0;
+}
+
+----0ms
+#include<iostream>
+#include<set>
+#include<string>
+using namespace std;
+int flag;
+void printkg(int l){
+	for(int i = 0;i < l; ++i)
+		printf("|     ");
+}
+void pf(int l){
+	string str;
+	set<string> dir;
+	if(!flag){
+		printf("ROOT\n");
+		flag = 1;	
+	}
+	while(cin >> str){
+		switch(str[0]){
+			case 'f':
+				dir.insert(str);
+				break;
+			case 'd':
+				printkg(l);
+				cout << str << endl;
+				pf(l + 1);
+				break;
+			case ']':
+				for(set<string>::iterator i = dir.begin();i != dir.end();++i){
+					printkg(l - 1);
+					cout << *i << endl;;
+				}
+				return;
+			case '*':
+				for(set<string>::iterator i = dir.begin();i != dir.end(); ++i)
+					cout << *i << endl;
+				cin.get();
+				return;
+		}
+	}
+}
+int main(){
+	int n = 1;
+	while(cin.peek() != '#'){
+		printf("DATA SET %d:\n",n);
+		flag = 0;
+		pf(1);
+		++n;
+		printf("\n");
+	}
+	return 0;
+}
+
+
+----0ms
+
+#include<iostream>
+#include<string>
+#include<set>
+#include<algorithm>
+using namespace std;
+#define ufor(i,a,b) for(int i=a;i<b;++i)
+#define dfor(i,a,b) for(int i=a;i>b;--i)
+#define pb push_back
+//cout<<"test01"<<endl;cout<<"test02<<endl;//
+
+int flag;
+void printkg(int l) {
+	for (int i = 0; i < l; ++i)
+		printf("|     ");
+}
+void ans(int l) {
+	string str;
+	set<string> dir;
+	if (!flag) {
+		printf("ROOT\n");
+		flag = 1;
+	}
+	while (cin >> str) {
+		switch (str[0]) {
+		case 'f':
+			dir.insert(str);
+			break;
+		case 'd':
+			printkg(l);
+			cout << str << endl;
+			ans(l + 1);
+			break;
+		case ']':
+			for (auto i = dir.begin(); i != dir.end(); ++i) {
+				printkg(l - 1);
+				cout << *i << endl;
+			}
+			return;
+		case '*':
+			for (auto i = dir.begin(); i != dir.end(); ++i)
+				cout << *i << endl;
+			cin.get();
+			return;
+		}
+	}
+}
+int main()
+{
+	int n = 1;
+	while (cin.peek() != '#') {
+		printf("DATA SET %d:\n", n);
+		flag = 0;
+		ans(1);
+		++n;
+		printf("\n");
+	}
+	return 0;
+
+}
+
+****C: The Sierpinski Fractal
+----5ms
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+using namespace std;
+char a[1025][2050];
+void draw(int x,int y,int n) ///确定三角形上面的那个点
+{
+    if(n==1)
+    {
+        a[x][y]=a[x+1][y-1]='/';
+        a[x][y+1]=a[x+1][y+2]='\\';
+        a[x+1][y]=a[x+1][y+1]='_';
+        return ;
+    }
+    int d=1<<(n-1);
+    draw(x,y,n-1);///当前的三角形
+    draw(x+d,y-d,n-1);///左下的三角形
+    draw(x+d,y+d,n-1);///右下的三角形
+}
+int main()
+{
+    int n;
+    while(~scanf("%d",&n)&&n)
+    {
+        int h=(1<<n);
+        int w=(1<<(n+1));
+        for(int i=1; i<=h; i++)
+            for(int j=1; j<=w; j++)
+                a[i][j]=' ';
+        draw(1,1<<n,n);///画图
+        int k=(1<<n)+1;
+        for(int i=1; i<=h; i++,k++)
+        {
+            a[i][k+1]='\0';
+            puts(a[i]+1);
+        }
+        puts("");
+    }
+    return 0;
+}
+
+
+----5ms
+#include <cstdio>
+#include <iostream>
+#include <cstring>
+#include <vector>
+#include <cmath>
+#include <queue>
+#include <map>
+#include <string>
+#include <stack>
+#include <algorithm>
+using namespace std;
+#define mem(a,n) memset(a,n,sizeof(a))
+#define rep(i,a,n) for(int i=a;i<n;i++)
+#define pb push_back
+#define lson l,m,rt<<1
+#define rson m+1,r,rt<<1|1
+typedef long long ll;
+const int INF=0x3f3f3f3f;
+const double PI=4*atan(1.0);
+const int MOD=1e9+7;
+const double eps=1e-8;
+const int N=1e3+5;
+char a[1025][2050];
+void draw(int x,int y,int n)
+{
+    if(n==1)
+    {
+        a[x][y]=a[x+1][y-1]='/';
+        a[x][y+1]=a[x+1][y+2]='\\';
+        a[x+1][y]=a[x+1][y+1]='_';
+        return ;
+    }
+    int d=1<<(n-1);
+    draw(x,y,n-1);
+    draw(x+d,y-d,n-1);
+    draw(x+d,y+d,n-1);
+}
+int main()
+{
+    int n;
+    while(~scanf("%d",&n)&&n)
+    {
+        int h=(1<<n);
+        int w=(1<<(n+1));
+        for(int i=1; i<=h; i++)
+            for(int j=1; j<=w; j++)
+                a[i][j]=' ';
+        draw(1,1<<n,n);
+        int k=(1<<n)+1;
+        for(int i=1; i<=h; i++,k++)
+        {
+            a[i][k+1]='\0';
+            puts(a[i]+1);
+        }
+        puts("");
+    }
+    return 0;
+}
+
+----6ms
+#include <cstdio>
+#include <iostream>
+#include <cstring>
+#include <vector>
+#include <cmath>
+#include <queue>
+#include <map>
+#include <string>
+#include <stack>
+#include <algorithm>
+using namespace std;
+#define mem(a,n) memset(a,n,sizeof(a))
+#define rep(i,a,n) for(int i=a;i<n;i++)
+#define pb push_back
+#define lson l,m,rt<<1
+#define rson m+1,r,rt<<1|1
+typedef long long ll;
+const int INF=0x3f3f3f3f;
+const double PI=4*atan(1.0);
+const int MOD=1e9+7;
+const double eps=1e-8;
+const int N=1e3+5;
+char a[1025][2050];
+void draw(int x,int y,int n) ///确定三角形上面的那个点
+{
+    if(n==1)
+    {
+        a[x][y]=a[x+1][y-1]='/';
+        a[x][y+1]=a[x+1][y+2]='\\';
+        a[x+1][y]=a[x+1][y+1]='_';
+        return ;
+    }
+    int d=1<<(n-1);
+    draw(x,y,n-1);///当前的三角形
+    draw(x+d,y-d,n-1);///左下的三角形
+    draw(x+d,y+d,n-1);///右下的三角形
+}
+int main()
+{
+    int n;
+    while(~scanf("%d",&n)&&n)
+    {
+        int h=(1<<n);
+        int w=(1<<(n+1));
+        for(int i=1; i<=h; i++)
+            for(int j=1; j<=w; j++)
+                a[i][j]=' ';
+        draw(1,1<<n,n);///画图
+        int k=(1<<n)+1;
+        for(int i=1; i<=h; i++,k++)
+        {
+            a[i][k+1]='\0';
+            puts(a[i]+1);
+        }
+        puts("");
+    }
+    return 0;
+}
+

@@ -1,0 +1,349 @@
+****A: 滑雪
+----645B
+#include<bits/stdc++.h>
+#define fi first
+#define se second
+#define pb push_back
+#define mp make_pair
+using namespace std;
+int n,m,a[111][111],dp[111][111],dx[4]={0,0,1,-1},dy[4]={1,-1,0,0},ans;
+vector<pair<int,pair<int,int>>>V;
+inline void dmax(int &x,int y){ x=max(x,y); }
+int main(){
+	scanf("%d%d",&n,&m);
+	for(int i=1;i<=n;i++) for(int j=1;j<=m;j++)
+		scanf("%d",&a[i][j]), V.pb(mp(-a[i][j],mp(i,j)));
+	sort(V.begin(),V.end());
+	for(int i=0;i<V.size();i++){
+		int x=V[i].se.fi,y=V[i].se.se;
+		for(int j=0;j<4;j++)
+			if(a[x+dx[j]][y+dy[j]]<a[x][y])
+				dmax(dp[x+dx[j]][y+dy[j]],dp[x][y]+1);
+		dmax(ans,dp[x][y]+1);
+	}
+	printf("%d\n",ans);
+}
+
+
+----647B
+#include<bits/stdc++.h>
+using namespace std;
+
+const int N=100+19;
+
+int dx[4]={1,0,-1,0};
+int dy[4]={0,1,0,-1};
+int f[N][N];
+int a[N][N];
+int n,m,ans;
+
+int dfs(int x,int y){
+	if (~f[x][y]) return f[x][y];
+	int &res=f[x][y];
+	res=1;
+	for (int i=0;i<4;i++){
+		int nx=x+dx[i];
+		int ny=y+dy[i];
+		if (nx<1||nx>n||ny<1||ny>m||a[nx][ny]>=a[x][y]) continue;
+		res=max(res,dfs(nx,ny)+1);
+	}
+	return res;
+}
+
+int main(){
+	memset(f,-1,sizeof(f));
+	scanf("%d%d",&n,&m);
+	for (int i=1;i<=n;i++){
+		for (int j=1;j<=m;j++){
+			scanf("%d",&a[i][j]);
+		}
+	}
+	for (int i=1;i<=n;i++){
+		for (int j=1;j<=m;j++){
+			ans=max(ans,dfs(i,j));
+		}
+	}
+	printf("%d\n",ans);
+}
+
+----665B
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn=107;
+int f[maxn][maxn],h[maxn][maxn],r,c;
+int search(int x,int y){
+	if(f[x][y]) return f[x][y];
+	int now=1;
+	if(x != 1 && h[x-1][y] < h[x][y]) now = max(now,search(x-1,y)+1);
+	if(x != r && h[x+1][y] < h[x][y]) now = max(now,search(x+1,y)+1);
+	if(y != 1 && h[x][y-1] < h[x][y]) now = max(now,search(x,y-1)+1);
+	if(y != c && h[x][y+1] < h[x][y]) now = max(now,search(x,y+1)+1);
+	return f[x][y] = now;
+}
+int main(){
+	cin >>r >>c;int ans = 0;
+	for(int i=1;i<=r;++i) for(int j=1;j<=c;++j) cin >>h[i][j];
+	for(int i=1;i<=r;++i) for(int j=1;j<=c;++j) ans = max(ans,search(i,j));
+	cout <<ans <<endl;
+ 	return 0;
+}
+
+****B: 最佳加法表达式
+----997B
+#include<bits/stdc++.h>
+using namespace std;
+int m;
+string f[55], s;
+string mins(string a, string b){
+	if(a=="INF")return b; if(b=="INF")return a;
+	int i=0; while(a[i]=='0')i++; a=a.substr(i);
+	i=0; while(b[i]=='0')i++; b=b.substr(i);
+	int lena=a.size(),lenb=b.size();
+	if(lena>lenb) return b;
+	else if(lena<lenb) return a;
+	for(int i=0;i<=lena;i++){
+		if(a[i]-'0'>b[i]-'0')return b;
+		if(a[i]-'0'<b[i]-'0')return a;
+	}
+	return a;
+}
+
+string adds(string a, string b){
+	if(a=="INF"||b=="INF")return "INF";
+	string s = "";
+	int jw=0,i=a.size()-1,j=b.size()-1,k=0;
+	while(i>=0||j>=0||jw>0){
+		int numa=(i>=0)?a[i--]-'0':0,numb=(j>=0)?b[j--]-'0':0,temp=numa+numb+jw;
+		s+=(temp)%10+'0', jw=temp/10;
+	}
+	reverse(s.begin(),s.end());
+	return s;
+}
+
+int main(){
+	while(cin>>m){
+		cin>>s;
+		int n = s.size();
+		for(int i=1;i<=n;i++)f[i]="INF";
+		f[0]="0",++m;
+		for(int i=1;i<=m;i++) for(int j=n-m+i;j>=i;j--) for(int k=i-1;k<=j-1;k++)
+			f[j]=mins(f[j],adds(f[k],s.substr(k,j-k)));
+		cout<<f[n]<<endl;
+	}
+}
+
+
+----1110B
+#include <iostream>
+#include <cstring>
+using namespace std;
+string s;
+string ans[52][52];
+void init()
+{
+ for(int i=0;i<52;i++)
+  for(int j=0;j<52;j++)
+   ans[i][j]="";
+}
+string mins(string a,string b)
+{
+ if(a.size()==0)
+  return b;
+ if(a.size()!=b.size())
+  return a.size()>b.size()?b:a;
+ else
+  return a>b?b:a;
+}
+string add(string a,string b)
+{
+ string c=a.size()>b.size()?a:b;
+ c="0"+c;
+ int i=a.size()-1,j=b.size()-1,k=c.size()-1;
+ while(i>=0||j>=0)
+ {
+  c[k--]=a[i--]+b[j--]-'0';
+  if(j<0)
+  {
+   while(i>=0)
+   {
+    c[k--]=a[i--];
+   }
+  }
+  if(i<0)
+  {
+   while(j>=0)
+   {
+    c[k--]=b[j--];
+   }
+  }
+ }
+ for(i=c.size()-1;i>0;i--)
+ {
+  if(c[i]>'9')
+  {
+   c[i]-=10;
+   c[i-1]+=1;
+  }
+ }
+ return c[0]=='0'?c.substr(1,c.size()-1):c;
+}
+void dfs(int n,int m)
+{
+ if(m==0&&n>0)
+ {
+  ans[n][m]=s.substr(0,n);
+ }
+ else
+ {
+  for(int i=m;i<n;i++)
+  {
+   string temp=s.substr(i,n-i);
+   if(ans[i][m-1]=="")
+   {
+    dfs(i,m-1);
+   }
+   ans[n][m]=mins(ans[n][m],add(ans[i][m-1],temp));
+  }
+ }
+}
+int main()
+{
+ int m;
+    while(cin>>m>>s){
+  init();
+  dfs(s.size(),m);
+  cout<<ans[s.size()][m]<<endl;
+ }
+ return 0;
+}
+
+
+----1161B
+#include<iostream>
+#include<string>
+#include<algorithm>
+using namespace std;
+bool les(const string& a, const string& b) {
+	if (a.size() == b.size())return a < b;
+	else return a.size() < b.size();
+}
+#define min(a,b) les(a,b)?(a):(b)
+string sum[52]{};
+string tmp[52]{};
+string add(const string& a,const string& b) {
+	string c, d;
+	if (a.size() < b.size()) {
+		d = a, c = b;
+	}
+	else {
+		c = a, d = b;
+	}
+	reverse(c.begin(), c.end());
+	reverse(d.begin(), d.end());
+	for (int i = 0; i < d.size(); ++i)c[i] += d[i]-'0';
+	c.push_back('0');
+	for (int i = 0; i < c.size()-1; ++i) {
+		c[i + 1] += (c[i] - '0') / 10;
+		c[i] = (c[i] - '0') % 10 + '0';
+	}
+	if (*(--c.end()) == '0')c.pop_back();
+	reverse(c.begin(),c.end());
+	return c;
+	
+}
+int main() {
+	int m;
+	string in;
+	while (cin>>m>>in) {
+		for (int i = 0; i < in.size(); ++i)tmp[i]=sum[i] = in.substr(0, i + 1);
+		for (int k = 0; k < m; ++k) {
+			for (int i = k; i < in.size() - 1; ++i) {
+				for (int j = i+1; j < in.size(); ++j) {
+					tmp[j] = min(tmp[j], add(sum[i], in.substr(i + 1, j-i)));
+				}
+			}
+			for (int i = 0; i < in.size(); ++i)sum[i] = tmp[i];
+		}
+		cout << sum[in.size()-1] << endl;
+	}
+	return 0;
+}
+
+****C: 怪盗基德的滑翔翼
+----391B
+#include<bits/stdc++.h>
+using namespace std;
+int sta[110],T;
+void put(int x){
+	int h=1,t=T,r=0,m;
+	while(h<=t)
+		if(sta[m=h+t>>1]>x)r=m,h=m+1;else t=m-1;
+	sta[r+1]=x;if(r==T)++T;
+}
+int main(){
+	int n,a[110],C;scanf("%d",&C);
+	while(C--){
+		scanf("%d",&n);T=0;
+		for(int i=1;i<=n;++i)scanf("%d",a+i),put(a[i]);
+		int r=T;T=0;
+		for(int i=n;i;--i)put(a[i]);r=max(r,T);
+		printf("%d\n",r);
+	}
+}
+
+----420B
+#include<bits/stdc++.h>
+using namespace std;
+int T,n,a[1111],dp[1111][2],ans;
+int main(){
+	scanf("%d",&T);
+	while(T--){
+		scanf("%d",&n),ans=0;
+		for(int i=1;i<=n;i++){
+			scanf("%d",a+i);
+			dp[i][0]=dp[i][1]=1;
+			for(int j=1;j<i;j++){
+				if(a[j]<a[i]) dp[i][0]=max(dp[j][0]+1,dp[i][0]);
+				if(a[j]>a[i]) dp[i][1]=max(dp[j][1]+1,dp[i][1]);
+			}
+			ans=max(ans,max(dp[i][0],dp[i][1]));
+		}
+		printf("%d\n",ans);
+	}
+}
+
+
+----440B
+#include<bits/stdc++.h>
+using namespace std;
+
+const int N=100+19;
+
+int dp[N],a[N];
+int T,res,n;
+
+void Dp(){
+	for (int i=1;i<=n;i++){
+		dp[i]=1;
+		for (int j=1;j<i;j++)
+			if (a[i]>a[j]){
+				dp[i]=max(dp[i],dp[j]+1);
+			}
+		res=max(res,dp[i]);
+	}
+}
+void Main(){
+	scanf("%d",&n);
+	for (int i=1;i<=n;i++) scanf("%d",&a[i]);
+	res=0;
+	Dp();
+	reverse(a+1,a+n+1);
+	Dp();
+	printf("%d\n",res);
+}
+
+int main(){
+	scanf("%d",&T);
+	while (T--) Main();
+}
+

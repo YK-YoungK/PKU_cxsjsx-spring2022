@@ -1,0 +1,421 @@
+****A: Boolean Expressions
+----743B
+#include<iostream>
+#include<sstream>
+#include<stack>
+using namespace std;
+stringstream ss;
+bool solve(){
+	stack<bool> b;
+	stack<char> s;
+	char c;
+	bool flag=false;
+	while(ss>>c,!ss.eof()){
+		if(c==' ') continue;
+		if(c==')') return b.top();
+		if(c=='!') flag ^=1;
+		if(c=='V') b.push(flag^1),flag=false;
+		if(c=='F') b.push(flag^0),flag=false;
+		if(c=='&'||c=='|') s.push(c);
+		if(c=='(') b.push(flag^solve()),flag=false;
+		if(b.size()==2){
+			bool a1=b.top();b.pop();
+			bool a2=b.top();b.pop();
+			b.push(s.top()=='&'?a1&&a2:a1||a2);
+			s.pop();
+		}
+	}
+	return b.top();
+
+}
+int main(){
+	string line;
+	int num=0;
+	while(getline(cin,line)){
+		ss<<line;
+		cout<<"Expression "<<++num<<": "<<(solve()?'V':'F')<<endl;
+		ss.clear();
+	}
+	return 0;
+}
+
+
+----1042B
+#include <iostream>
+#include <cstring>
+using namespace std;
+int dfs();
+int part();
+
+char tem;
+char peek;
+int part() {
+	bool f = 1;
+	while ((peek = cin.peek()) == ' ') (tem = getchar());
+	if ((peek = cin.peek()) == 'V' || (peek = cin.peek()) == 'F') {
+		return ((tem = getchar()) == 'V' ? 1 : 0);
+	}
+	if ((peek = cin.peek()) == '!') {
+		tem = getchar();
+		return (part() ^ 1);
+	}
+	if ((peek = cin.peek()) == '(') {
+		(tem = getchar());
+		f = dfs();
+		while ((peek = cin.peek()) == ' ') (tem = getchar());
+		(tem = getchar());
+	}
+	return f;
+}
+int dfs() {
+	bool f = 1;
+	f = part();
+	while ((peek = cin.peek()) == ' ') (tem = getchar());
+	while ((peek = cin.peek()) == '|' || (peek = cin.peek()) == '&') {
+		if ((tem = getchar()) == '|') f = part() || f;
+		else f = part() && f;
+		while ((peek = cin.peek()) == ' ') (tem = getchar());//空格
+	}
+	if ((peek = cin.peek()) == '\n') tem = getchar();
+	return f;
+}
+int main() 
+{
+	int Case = 1;
+	while (cin.peek() != EOF ) {
+		printf("Expression %d: %c\n", Case++, dfs() ? 'V' : 'F');
+	}
+	return 0;
+}
+
+
+
+----1047B
+#include <iostream>
+using namespace std;
+ 
+const int N=110;
+string s;
+int val[N],op[N],vtop,otop;
+ 
+void insert(int);
+void calc();
+int main()
+{
+	int loop=0;
+	while (getline(cin,s)){
+		vtop=otop=0;
+		for (int i=0;i<s.size();++i)
+			switch(s[i]){
+				case '(':
+					op[otop++]=0;
+					break;
+				case ')':
+					while (otop && op[otop-1]!=0) calc();
+					--otop;
+					insert(val[--vtop]);
+					break;
+				case '!':
+					op[otop++]=3;
+					break;
+				case '&':
+					while (otop && op[otop-1]>=2) calc();
+					op[otop++]=2;
+					break;
+				case '|':
+					while (otop && op[otop-1]>=1) calc();
+					op[otop++]=1;
+					break;
+				case 'V':
+					insert(1);
+					break;
+				case 'F':
+					insert(0);
+					break;
+				default:
+					break;	
+			}
+		while (otop) calc();
+		cout<<"Expression "<<++loop<<": "<<(val[0]?'V':'F')<<endl;
+	}
+	return 0;
+}
+ 
+void insert(int x){
+	while (otop && op[otop-1]==3){
+		x=!x; --otop;
+	}
+	val[vtop++]=x;
+}
+ 
+void calc(){
+	int a=val[--vtop];
+	int b=val[--vtop];
+	int o=op[--otop];
+	if (o==1)
+		insert(a|b);
+	else
+		insert(a&b);
+}
+
+****B: 文件结构“图”
+----772B
+#include<bits/stdc++.h>
+using namespace std;
+void printspace(int n)
+{
+	for(int i=0;i<n;i++)cout<<"|     ";
+}
+void read(int n)
+{
+	string files[10000]={};
+	int filesum=0;
+	string temp;
+	while(true)
+	{
+		cin>>temp;
+		if(temp[0]=='f')
+		{
+			files[filesum]=temp;
+			filesum++;
+		}
+		else if(temp[0]=='d')
+		{
+			printspace(n+1);
+			cout<<temp<<endl;
+			read(n+1);
+		}
+		else if(temp[0]==']'||temp[0]=='*')
+		{
+			cin.get();
+			break;
+		}
+	}
+	stable_sort(files,files+filesum);
+	for(int i=0;i<filesum;i++)
+	{
+		printspace(n);
+		cout<<files[i]<<endl;
+	}
+	return;
+}
+int main()
+{
+	int datasum=0;
+	char c;
+	while(true)
+	{
+		c=cin.peek();
+		if(c=='#')break;
+		datasum++;
+		if(datasum!=1)cout<<endl;
+		printf("DATA SET %d:\n",datasum);
+		cout<<"ROOT"<<endl;
+		read(0);
+	}
+	return 0;
+}
+
+----815B
+#include<iostream>
+#include<set>
+#include<string>
+using namespace std;
+
+int flag;
+void printkg(int l){
+	for(int i = 0;i < l; ++i)
+		cout<<"|     ";
+}
+
+void fun(int l){
+	string str;
+	set<string> dir;
+	if(!flag){
+		cout<<"ROOT"<<endl;
+		flag = 1;	
+	}
+	while(cin>>str){
+		switch(str[0]){
+			case 'f':
+				dir.insert(str);
+				break;
+			case 'd':
+				printkg(l);
+				cout<<str<<endl;
+				fun(l+1);
+				break;
+			case ']':
+				for(set<string>::iterator i=dir.begin();i!=dir.end();i++){
+					printkg(l-1);
+					cout<<*i<<endl;;
+				}
+				return;
+			case '*':
+				for(set<string>::iterator i=dir.begin();i!=dir.end();i++)
+					cout<<*i<<endl;
+				cin.get();
+				return;
+		}
+	}
+}
+
+int main(){
+	int n = 1;
+	while(cin.peek()!='#'){
+		cout<<"DATA SET "<<n<<":"<<endl;
+		flag = 0;
+		fun(1);
+		n++;
+		cout<<endl;
+	}
+	return 0;
+}
+
+----835B
+#include<iostream>
+#include<set>
+#include<string>
+using namespace std;
+int flag;
+void printkg(int l){
+	for(int i = 0;i < l; ++i)
+		printf("|     ");
+}
+void pf(int l){
+	string str;
+	set<string> dir;
+	if(!flag){
+		printf("ROOT\n");
+		flag = 1;	
+	}
+	while(cin >> str){
+		switch(str[0]){
+			case 'f':
+				dir.insert(str);
+				break;
+			case 'd':
+				printkg(l);
+				cout << str << endl;
+				pf(l + 1);
+				break;
+			case ']':
+				for(set<string>::iterator i = dir.begin();i != dir.end();++i){
+					printkg(l - 1);
+					cout << *i << endl;;
+				}
+				return;
+			case '*':
+				for(set<string>::iterator i = dir.begin();i != dir.end(); ++i)
+					cout << *i << endl;
+				cin.get();
+				return;
+		}
+	}
+}
+int main(){
+	int n = 1;
+	while(cin.peek() != '#'){
+		printf("DATA SET %d:\n",n);
+		flag = 0;
+		pf(1);
+		++n;
+		printf("\n");
+	}
+	return 0;
+}
+
+****C: The Sierpinski Fractal
+----437B
+#include<bits/stdc++.h>
+using namespace std;
+char c[4444][4444];
+int main(){
+	memset(c,' ',sizeof c);
+	c[0][0]='/', c[0][1]='_', c[0][2]='_', c[0][3]='\\', c[1][1]='/', c[1][2]='\\';
+	for(int n=4;n<4096;n<<=1) for(int i=0;i<n/2;i++) for(int j=0;j<n;j++)
+		c[i][j+n]=c[i+n/2][j+n/2]=c[i][j];
+	for(int n;cin>>n;puts("")){
+		if(!n)return 0;
+		for(int i=0;i<1<<n;puts(""),i++) for(int j=0;j<=(1<<n)+i;j++)
+			putchar(c[(1<<n)-i-1][j]);
+	}
+}
+
+
+----601B
+#include<iostream>
+using namespace std;
+const int maxn=1025;
+char pic[maxn][2*maxn];
+void solve(int n,int x,int y){
+	if(n==1){
+		pic[x][y]=pic[x+1][y-1]='/';
+		pic[x][y+1]=pic[x+1][y+2]='\\';
+		pic[x+1][y]=pic[x+1][y+1]='_';
+		return;
+	}
+	int m= 1<<(n-1);
+	solve(n-1,x,y);
+	solve(n-1,x+m,y-m);
+	solve(n-1,x+m,y+m);
+}
+int main(){
+	int n;
+	while(cin>>n&&n!=0){
+		int h=(1<<n);
+		int w=2*h;
+		for(int i=0;i<=h;i++){
+			for(int j=0;j<=w;j++)
+				pic[i][j]=' ';
+		}
+		solve(n,1,1<<n);
+		int k=h+1;
+		for(int i=1;i<=h;i++){
+			pic[i][k+i]='\0';
+			cout<<(pic[i]+1)<<endl;;
+		}
+		cout<<endl;
+	}
+	return 0;
+}
+
+
+----601B
+#include<iostream>
+using namespace std;
+const int maxn=1025;
+char pic[maxn][2*maxn];
+void solve(int n,int x,int y){
+	if(n==1){
+		pic[x][y]=pic[x+1][y-1]='/';
+		pic[x][y+1]=pic[x+1][y+2]='\\';
+		pic[x+1][y]=pic[x+1][y+1]='_';
+		return;
+	}
+	int m= 1<<(n-1);
+	solve(n-1,x,y);
+	solve(n-1,x+m,y-m);
+	solve(n-1,x+m,y+m);
+}
+int main(){
+	int n;
+	while(cin>>n&&n!=0){
+		int h=(1<<n);
+		int w=2*h;
+		for(int i=0;i<=h;i++){
+			for(int j=0;j<=w;j++)
+				pic[i][j]=' ';
+		}
+		solve(n,1,1<<n);
+		int k=h+1;
+		for(int i=1;i<=h;i++){
+			pic[i][k+i]='\0';
+			cout<<(pic[i]+1)<<endl;;
+		}
+		cout<<endl;
+	}
+	return 0;
+}
+
+

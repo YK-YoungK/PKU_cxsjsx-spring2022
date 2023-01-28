@@ -1,0 +1,613 @@
+****A: UNIMODAL PALINDROMIC DECOMPOSITIONS
+----1ms
+#include <iostream>
+
+using namespace std;
+
+long long record_part[251][126]={0};   
+long long record_sum[251]={0};          
+
+void record()
+{
+    record_part[1][1]=1;
+    record_part[2][1]=1;
+    record_sum[1]=1;
+    record_sum[2]=2;
+
+    int i,j;
+    for(i=3;i<250;i++) {
+        record_part[i][1]=record_sum[i-2];
+        record_sum[i]=record_part[i][1];
+        if (i%2==0) record_part[i][i/2]=1;                  
+        for(j=2;j<=i/2;j++) {
+            for(int k=j;k<=(i-2*j)/2;k++){
+                record_part[i][j]+=record_part[i-2*j][k];
+            }
+            if(j<=(i-2*j)) record_part[i][j]++;             
+            record_sum[i]+=record_part[i][j];
+        }
+        record_sum[i]++;                                   
+    }
+}
+
+int main()
+{
+    record();
+    int n;
+    while(cin >>n) {
+        if (n==0) break;
+        else cout << n << " " << record_sum[n]<<endl;
+    }
+    return 0;
+}
+
+
+----1ms
+#include <iostream>
+using namespace std;
+long long dp[251][126] = {0}; 
+long long ans[251] = {0};       
+void solve()
+{
+
+  dp[1][1] = 1;
+  dp[2][1] = 1;
+  ans[1] = 1;
+  ans[2] = 2;
+  int i, j;
+  for (i = 3; i < 250; i++)
+  {
+    dp[i][1] = ans[i - 2];
+    ans[i] = dp[i][1];
+    if (i % 2 == 0)
+      dp[i][i / 2] = 1; 
+    for (j = 2; j <= i / 2; j++)
+    {
+      for (int k = j; k <= (i - 2 * j) / 2; k++)
+      {
+        dp[i][j] += dp[i - 2 * j][k];
+      }
+      if (j <= (i - 2 * j))
+        dp[i][j]++; 
+      ans[i] += dp[i][j];
+    }
+    ans[i]++; 
+  }
+}
+
+int main()
+{
+  solve();
+  int n;
+  while (cin >> n)
+  {
+    if (n == 0)
+      break;
+    else
+      cout << n << " " << ans[n] << endl;
+  }
+  return 0;
+}
+
+----1ms
+#include <iostream>
+
+using namespace std;
+
+long long record_part[251][126]={0};  
+long long record_sum[251]={0};         
+void record()
+{
+    record_part[1][1]=1;
+    record_part[2][1]=1;
+    record_sum[1]=1;
+    record_sum[2]=2;
+
+    int i,j;
+    for(i=3;i<250;i++) {
+        record_part[i][1]=record_sum[i-2];
+        record_sum[i]=record_part[i][1];
+        if (i%2==0) record_part[i][i/2]=1;           
+        for(j=2;j<=i/2;j++) {
+            for(int k=j;k<=(i-2*j)/2;k++){
+                record_part[i][j]+=record_part[i-2*j][k];
+            }
+            if(j<=(i-2*j)) record_part[i][j]++;      
+            record_sum[i]+=record_part[i][j];
+        }
+        record_sum[i]++;                               
+    }
+}
+
+int main()
+{
+    record();
+    int n;
+    while(cin >>n) {
+        if (n==0) break;
+        else cout << n << " " << record_sum[n]<<endl;
+    }
+    return 0;
+}
+
+
+****B: 硬币
+----2ms
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+int kinds[10010]; // 存储总价值为p的方法总数;
+int calc(int allvalue, int nowvalue) // 总价值为allvalue
+           //不含有这一枚面值为nowvalue的硬币的方法数目;
+{
+ if (allvalue < 0)
+  return 0;
+ else
+  return kinds[allvalue] - calc(allvalue - nowvalue, nowvalue);//总方法数减去含有这一枚面值为nowvalue的硬币的方法数目;
+                                                                  //即减去总价值为allvalue - nowvalue,不含这枚硬币的方法数目;
+}
+int main()
+{
+ int n, x; // n是硬币总数，x是要凑成的总面值;
+ cin >> n >> x;
+ int values[210]; // 存储每一个硬币的面值;
+ kinds[0] = 1;// 初始条件,总面值为0的方法为1;
+ for (int i = 1; i <= n; ++i)
+ {
+  cin >> values[i];
+  /*每输入一枚硬币就更新一次kinds*/
+  for (int j = x; j >= values[i]; --j)
+   kinds[j] += kinds[j - values[i]];
+ }
+ int finalcoin[210];
+ int cntcoin = 0;
+ /*遍历每一枚硬币，
+        若总价值为x且不含这枚硬币的方法数目为0，则必须含有这枚硬币*/
+  for (int i = 1; i <= n; ++i)
+   if (calc(x, values[i]) == 0)
+    finalcoin[cntcoin++] = values[i];
+
+  cout << cntcoin << endl;
+  if (!cntcoin)
+   cout << endl;
+  else
+   for (int i = 0; i < cntcoin; ++i)
+    cout << finalcoin[i] << " ";
+  return 0;
+}
+
+
+----2ms
+
+#include<iostream>
+using namespace std;
+int val[210]={0};
+int ways[10000]={0};
+int ans[210]={0};
+ 
+int cal(int x,int y){
+	if(x<0) return 0;
+	return ways[x]-cal(x-y,y);
+}
+ 
+int main(){
+	int N,Max;
+	cin>>N>>Max;
+	for(int i=1;i<=N;++i)
+		cin>>val[i];
+	ways[0]=1;
+	for(int i=1;i<=N;++i)
+		for(int j=Max;j>=val[i];--j)
+			ways[j]+=ways[j-val[i]];
+	int cnt=0;
+	for(int i=1;i<=N;++i)
+		if(cal(Max,val[i])==0)
+			ans[cnt++]=val[i];
+	cout<<cnt<<endl;
+	if(cnt==0) cout<<' '<<endl; 
+	else{
+		cout<<ans[0];
+		for(int i=1;i<cnt;++i)
+			cout<<' '<<ans[i];
+	}
+	return 0;
+}
+
+
+----2ms
+#include<iostream>
+using namespace std;
+int val[210]={0};
+int ways[10000]={0};
+int ans[210]={0};
+
+int cal(int x,int y){
+	if(x<0) return 0;
+	return ways[x]-cal(x-y,y);
+}
+
+int main(){
+	int N,Max;
+	cin>>N>>Max;
+	for(int i=1;i<=N;++i)
+		cin>>val[i];
+	ways[0]=1;
+	for(int i=1;i<=N;++i)
+		for(int j=Max;j>=val[i];--j)
+			ways[j]+=ways[j-val[i]];
+	int cnt=0;
+	for(int i=1;i<=N;++i)
+		if(cal(Max,val[i])==0)
+			ans[cnt++]=val[i];
+	cout<<cnt<<endl;
+	if(cnt==0) cout<<' '<<endl; 
+	else{
+		cout<<ans[0];
+		for(int i=1;i<cnt;++i)
+			cout<<' '<<ans[i];
+	}
+	return 0;
+}
+
+
+****C: Charm Bracelet
+----29ms
+#include<iostream>
+
+using namespace std;
+
+int main()
+{
+    int w[3404];//重量
+    int d[3404];//魅力
+    int n;//珠宝数
+    int m;//最大重量
+    cin>>n>>m;
+    for(int i=1;i<=n;i++)
+    {
+        cin>>w[i]>>d[i];
+    }
+    int dp[12888]={0};
+    for(int j=w[1];j<m;++j)
+    {
+        dp[j]=d[1];
+    }
+    for(int i=2;i<=n;++i)
+    {
+        for(int j=m;j>=w[i];j--)
+        {
+            if(dp[j-w[i]]+d[i]>dp[j])
+            {
+                dp[j]=dp[j-w[i]]+d[i];
+            }
+        }
+    }
+    cout<<dp[m]<<endl;
+    return 0;
+}
+
+----33ms
+#include<bits/stdc++.h>
+using namespace std;
+int N;
+int M;
+int charms[4000][2];
+int record[13000]={};
+int main()
+{
+	cin>>N>>M;
+	for(int i=0;i<N;i++)
+	{
+		cin>>charms[i][0]>>charms[i][1];
+	}
+	for(int n=1;n<=N;n++)
+	{
+		for(int w=M;w>0;w--)
+		{
+			if(w-charms[n-1][0]>=0)
+				if(record[w]<record[w-charms[n-1][0]]+charms[n-1][1])
+					record[w]=record[w-charms[n-1][0]]+charms[n-1][1];
+		}
+	}
+	cout<<record[M];
+}
+
+----34ms
+#include <stdio.h>
+#include<algorithm>
+int N,M;
+int w[3405];
+int d[3405];
+int lo[12880];
+using namespace std;
+
+int main()
+{
+   scanf("%d%d",&N,&M);
+   for(int i=0;i<N;i++){
+       scanf("%d%d",&(w[i]),&(d[i]));
+   }
+   for(int i=0;i<N;i++){
+    for(int j=M;j>=w[i];j--){
+        lo[j] = max(lo[j],lo[j-w[i]]+d[i]);
+    }
+   }
+
+   printf("%d",lo[M]);
+    return 0;
+}
+
+
+
+
+****D: 课程大作业
+----3ms
+#include<iostream>
+#include<vector>
+#include<algorithm>
+
+using namespace std;
+
+#define ll long long
+
+struct Info
+{
+    string name;
+    int ddl;
+    int cost;
+};
+
+struct node
+{
+    int pre;
+    int mini;
+    int last;
+    int finishday;//任务结束的那天
+};
+
+node dp[(1<<16)+20];
+
+vector<int> getpath(int status)
+{
+    vector<int> path;
+    while(status)
+    {
+        path.push_back(dp[status].last);
+        status=dp[status].pre;
+    }
+    reverse(path.begin(),path.end());
+    return path;
+}
+
+int main()
+{
+    Info info[20];
+    int t;
+    int n;
+    cin>>t;
+    while(t--)
+    {
+        cin>>n;
+        for(int i=0;i<n;i++)
+        {
+            cin>>info[i].name>>info[i].ddl>>info[i].cost;
+        }
+        dp[0].finishday=0;
+        dp[0].pre=-1;
+        dp[0].mini=0;
+        int m=1<<n;
+        for(int i=1;i<=m;++i)
+        {
+            dp[i].mini=1<<30;
+            for(int j=0;j<n;++j)
+            {
+                if(i&(1<<j))
+                {
+                    int pre=i-(1<<j);
+                    int finishday=dp[pre].finishday+info[j].cost;
+                    int tmpscore=finishday-info[j].ddl;
+                    if(tmpscore<0)
+                    {
+                        tmpscore=0;
+                    }
+                    if(dp[i].mini>dp[pre].mini+tmpscore)
+                    {
+                        dp[i].mini=dp[pre].mini+tmpscore;
+                        dp[i].pre=pre;
+                        dp[i].finishday=finishday;
+                        dp[i].last=j;
+                    }
+                    else if (dp[i].mini==dp[pre].mini+tmpscore)
+                    {
+                        vector<int> p1=getpath(dp[i].pre);
+                        vector<int> p2=getpath(pre);
+                        if(p2<p1)
+                        {
+                            dp[i].pre=pre;
+                            dp[i].finishday=finishday;
+                            dp[i].last=j;
+                        }
+                    }
+                    
+                }
+            }
+        }
+        cout<<dp[m-1].mini<<endl;
+        vector<int> path=getpath(m-1);
+        for(int i=0;i<path.size();++i)
+        {
+            cout<<info[path[i]].name<<endl;
+        }
+    }
+    return 0;
+}
+
+----3ms
+#define _CRT_SECURE_NO_WARNINGS
+#include<cstdio>
+#include<algorithm>
+#include<cstring>
+#include<vector>
+using namespace std;
+
+const int N = 15 + 5;
+
+struct Course {
+	char s[50 + 5];
+	int ed, time;
+	bool operator<(const Course& c)const {
+		return strcmp(s, c.s) < 0;
+	}
+}cor[N];
+
+int dp[1 << 20], pre[1 << 20];
+
+void print(int x, vector<int>& v) {
+	if (x == 0) return;
+	print((1 << pre[x]) ^ x, v);
+	v.push_back(pre[x]);
+}
+
+int big(vector<int> a, vector<int> b) {
+	for (int i = 0; i < a.size(); i++){
+		if (a[i] > b[i]) return 1;
+		if (a[i] < b[i]) return 0;
+	}
+	return 0;
+}
+
+int main() {
+	int t; scanf("%d", &t);
+	while (t--) {
+		int n; scanf("%d", &n);
+		for (int i = 0; i < n; i++)
+			scanf("%s%d%d", cor[i].s, &cor[i].ed, &cor[i].time);
+		sort(cor, cor + n);
+		for (int i = 0; i < (1 << n); i++)
+			dp[i] = 1e7;
+		dp[0] = 0;
+		for (int i = 0; i < (1 << n); i++) {
+			int pret = 0;
+			for (int j = 0; j < n; j++)
+				if ((i >> j) & 1)
+					pret += cor[j].time;
+			for (int j = 0; j < n; j++)
+				if (!((i >> j) & 1))
+				{
+					int now = dp[i] + (cor[j].ed < pret + cor[j].time ? cor[j].time + pret - cor[j].ed : 0);
+					if (now < dp[(1 << j) + i]) {
+						dp[(1 << j) + i] = now;
+						pre[(1 << j) + i] = j;
+					}
+					else if (now == dp[(1 << j) + i]) {
+						vector<int> v1, v2;
+						print((1 << j) + i,v1);
+						print(i, v2);
+						v2.push_back(j);
+						if(big(v1,v2)) pre[(1 << j) + i] = j;
+					}
+				}
+		}
+		printf("%d\n", dp[(1 << n) - 1]);
+		vector<int> path;
+		print((1 << n) - 1, path);
+		for (int i = 0; i < path.size(); i++)
+			printf("%s\n", cor[path[i]].s);
+	}
+	return 0;
+}
+
+
+----6ms
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+#include <vector>
+#include <string>
+#define INF 1<<30
+using namespace std;
+class project {
+public:
+    string name;
+    int ddl;
+    int need;
+    friend istream& operator>>(istream&in, project&A) {
+        in >> A.name >> A.ddl >> A.need;
+        return in;
+    }
+}projects[16];
+class Node {
+public:
+    int pre;
+    int minscore;
+    int last;
+    int finishday;
+}dp[(1<<16)+10];
+int dominus(int nowday, int j) {
+    if (nowday + projects[j].need <= projects[j].ddl)
+        return 0;
+    else
+        return nowday + projects[j].need - projects[j].ddl;
+}
+vector<string> getpath(int k) {
+    vector<string>result;
+    while (dp[k].pre != 0) {
+        result.push_back(projects[dp[k].last].name);
+        k = dp[k].pre;
+    }
+    result.push_back(projects[dp[k].last].name);
+    reverse(result.begin(), result.end());
+    return result;
+}
+bool operator < (const vector<string>&A, const vector<string>&B) {
+    for (int i = 0, j = 0; i < A.size() && j < B.size(); i++, j++) {
+        if (A[i] < B[j])
+            return true;
+        else if (A[i] > B[j])
+            return false;
+    }
+    return false;
+}
+int main()
+{
+    int T;
+    cin >> T;
+    while (T--) {
+        memset(dp, 0, sizeof(dp));
+        int N;
+        cin >> N;
+        for (int i = 0; i < N; i++)
+            cin >> projects[i];
+        for (int s = 1; s < (1 << N); s++) {
+            dp[s].minscore = INF;
+            for (int j = 0; j < N; j++) {
+                if ((s >> j) & 1) {
+                    int s_j = s - (1 << j);
+                    int nowscore = dp[s_j].minscore + dominus(dp[s_j].finishday, j);
+                    if ( nowscore< dp[s].minscore) {
+                        dp[s].minscore = nowscore;
+                        dp[s].pre = s_j;
+                        dp[s].last = j;
+                        dp[s].finishday = dp[s_j].finishday + projects[j].need;
+                    }
+                    else if (nowscore == dp[s].minscore) {
+                        vector<string>a = getpath(s_j);
+                        vector<string>b = getpath(dp[s].pre);
+                        if (a < b) {
+                            dp[s].minscore = nowscore;
+                            dp[s].pre = s_j;
+                            dp[s].last = j;
+                            dp[s].finishday = dp[s_j].finishday + projects[j].need;
+                        }
+                    }
+                }
+            }
+        }
+        cout << dp[(1 << N) - 1].minscore << endl;
+        vector<string>paths = getpath((1 << N) - 1);
+        for (int i = 0; i < paths.size(); i++)
+             cout << paths[i] << endl;
+    }
+}
+

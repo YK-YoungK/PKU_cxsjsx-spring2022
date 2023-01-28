@@ -1,0 +1,496 @@
+****A: 拨钟问题
+----651B
+#include<bits/stdc++.h>
+#define N 1000
+using namespace std;
+int c[10][6]={{},{4,1,2,4,5},{3,1,2,3},{4,2,3,5,6},{3,1,4,7},{5,2,4,5,6,8},{3,3,6,9},{4,4,5,7,8},{3,7,8,9},{4,5,6,8,9}};
+int ans,res[N],b[N],a[N],cnt;
+void calc(){
+	for(int i=1;i<=9;i++) if(a[i]) return;
+	ans=cnt;for(int i=1;i<=9;i++) res[i]=b[i];
+}
+void dfs(int x){
+	if(cnt>=ans) return;
+	if(x==10) return calc();
+	for(int i=0;i<=3;i++){
+		b[x]=i;dfs(x+1);
+		for(int j=1;j<=c[x][0];j++) (a[c[x][j]]+=1)%=4;cnt++;
+	}
+	cnt-=4;
+}
+int main(){
+	for(int i=1;i<=9;i++) scanf("%d",&a[i]);
+	ans=999999999; dfs(1);
+	for(int i=1;i<=9;i++) {
+		for(int j=1;j<=res[i];j++)printf("%d ",i);
+	}
+	return 0;
+}
+
+----959B
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int maxn = 11;
+const int maxm = 11;
+
+int n = 9, m = 9;
+int cur[maxn];
+string str[maxm] = {"ABDE", "ABC", "BCEF", "ADG", "BDEFH", "CFI", "DEGH", "GHI", "EFHI"};
+
+int main() {
+	for (int i = 0; i < n; i++) {
+		scanf("%d", &cur[i]);
+	}
+	int mn = 0x7fffffff, opt = 0;
+	for (int i = 0; i < (1 << (2 * m)); i++) {
+		int t[maxn]; memset(t, 0, sizeof(t));
+		int sz = 0;
+		for (int j = 0; j < m; j++) {
+			int c = (i >> (2 * j)) & 3;
+			for (int k = 0; k < str[j].size(); k++) {
+				t[str[j][k] - 'A'] += c;
+			}
+			sz += c;
+		}
+		int ok = 1;
+		for (int j = 0; j < n; j++) {
+			if (t[j] % 4 != (4 - cur[j]) % 4) {
+				ok = 0;
+			}
+		}
+		if (ok) {
+			if (sz < mn) {
+				mn = sz;
+				opt = i;
+			} else if (sz == mn) {
+				if (i < opt) {
+					opt = i;
+				}
+			}
+		}
+	}
+	for (int i = 0; i < m; i++) {
+		int c = (opt >> (2 * i)) & 3;
+		if (c) {
+			while (c--)
+				printf("%d ", i+1);
+		}
+	}
+	printf("\n");
+	return 0;
+}
+
+----1062B
+#include<iostream>
+using namespace std;
+
+int ope[10][5]={{},{1,2,4,5},{1,2,3},{2,3,5,6},{1,4,7},{2,4,5,6,8},{3,6,9},{4,5,7,8},{7,8,9},{5,6,8,9}};
+int state[10];
+int times[10],mini=2000000000,ans_times[10];
+bool flag=true;
+
+void deal(int k,int total)
+{
+    if (k==10)
+    {
+        for (int i=1;i<=9;i++)
+            if (state[i]&3)
+                return;
+        if (total<mini)
+        {
+            mini=total;
+            for (int i=1;i<=9;i++)
+                ans_times[i]=times[i];
+        }
+        return;
+    } 
+    for (times[k]=0;times[k]<4;times[k]++)
+    {
+        for (int i=0;i<5;i++)
+            state[ope[k][i]]+=times[k];
+        deal(k+1,total+times[k]);
+        for (int i=0;i<5;i++)
+            state[ope[k][i]]-=times[k];
+    }
+    return;
+}
+
+int main()
+{
+    for (int i=1;i<=9;i++)
+        cin>>state[i];
+    deal(1,0);
+    for (int i=1;i<=9;i++)
+        for (int j=0;j<ans_times[i];j++)
+        {
+            if (flag)
+                flag=false;
+            else
+                cout<<" ";
+            cout<<i;
+        }
+    return 0; 
+}
+
+****B: 特殊密码锁
+----657B
+#include<iostream>
+#include<cstring>
+using namespace std;
+string str1, str2, tmp;
+int len;
+void change(string& str, int i) {
+	str[i] ^= 1;
+	str[i - 1] ^= 1;
+	if (i + 1 < len)str[i + 1] ^= 1;
+}
+int main() {
+	cin >> str1 >> str2;
+	tmp = str1;
+	len = str1.length();
+	int ans1 = 0, ans2 = 1;
+	for (int i = 1; i < len; i++) {
+		if (str1[i - 1] != str2[i - 1]) {
+			ans1++;
+			change(str1, i);
+		}
+	}
+	tmp[0] ^= 1;
+	tmp[1] ^= 1;
+	for (int i = 1; i < len; i++) {
+		if (tmp[i - 1] != str2[i - 1]) {
+			ans2++;
+			change(tmp, i);
+		}
+	}
+	if (str1 == str2 || tmp == str2) {
+		cout << min(ans1, ans2) << endl;
+	}
+	else {
+		cout << "impossible" << endl;
+	}
+	return 0;
+}
+
+----741B
+#include<iostream>
+#include<cstring>
+using namespace std;
+string lock[2];
+string temp;
+int main() {
+	int length;
+	int count1 = 0,count2 = 1;
+	cin >> lock[0] >> lock[1];
+	length = lock[0].length();
+	temp = lock[0];
+	for (int i = 1; i < length; i++) {
+		if (lock[0][i - 1] != lock[1][i - 1]) {
+			count1++;
+			lock[0][i - 1] ^= 1;
+			lock[0][i] ^= 1;
+			if (i < length - 1) {
+				lock[0][i + 1] ^= 1;
+			}
+		}
+	}
+	temp[0] ^= 1;
+	temp[1] ^= 1;
+	for (int i = 1; i < length; i++) {
+		if (temp[i - 1] != lock[1][i - 1]) {
+			count2++;
+			temp[i - 1] ^= 1;
+			temp[i] ^= 1;
+			if (i < length - 1) {
+				temp[i + 1] ^= 1;
+			}
+		}
+	}
+	if (lock[0] == lock[1] || temp == lock[1]) {
+		cout << min(count1,count2);
+	}
+	else {
+		cout << "impossible";
+	}
+}
+
+----766B
+#include<iostream>
+#include<cstdio>
+using namespace std;
+string x,y,s;
+int n;
+void change1(int i)
+{
+    x[i]^=1;
+    x[i-1]^=1;
+    if(i+1<n)
+    {
+        x[i+1]^=1;
+    }
+}
+void change2(int i)
+{
+    s[i]^=1;
+    s[i-1]^=1;
+    if(i+1<n)
+    {
+        s[i+1]^=1;
+    }
+}
+int main()
+{
+    int ans1=0,ans2=1;
+    cin>>x>>y;
+    s=x;
+    n=x.length();
+    for(int i=1;i<n;i++)
+    {
+        if(x[i-1]!=y[i-1])
+        {
+            ans1++;
+            change1(i);
+        }
+    }
+    s[0]^=1;
+    s[1]^=1;
+    for(int i=1;i<n;i++)
+    {
+        if(s[i-1]!=y[i-1])
+        {
+            ans2++;
+            change2(i);
+        }
+    }
+    if(x==y||s==y)
+    {
+        printf("%d",min(ans1,ans2));
+    }
+    else
+    {
+        printf("impossible");
+    }
+    return 0;
+}
+
+****C: 派
+----518B
+#include<bits/stdc++.h>
+using namespace std;
+int main()
+{
+	int N,F;
+	cin>>N>>F;
+	double s[10000]={};
+	double max=0;
+	for(int i=0;i<N;i++)
+	{
+		double temp;
+		cin>>temp;
+		s[i]=temp*temp;
+		if(s[i]>max)max=s[i];
+	}
+	double take=0;
+	double L=0;
+	double R=max;
+	double mid=max/2;
+	while(R-L>=0.00001)
+	{
+		int count=0;
+		for(int i=0;i<N;i++)
+			count+=(int)(s[i]/mid);
+		if(count>=F+1)
+		{
+			take=mid;
+			L=mid;
+			mid=L+(R-L)/2;
+		}
+		else
+		{
+			R=mid;
+			mid=L+(R-L)/2;
+		}
+	}
+	printf("%.3lf",take*3.1415926535898);
+}
+
+----531B
+#include <iostream>
+#include<cmath>
+using namespace std;
+
+int n,m;
+double l=0,r=0,a[10005];
+const double pi=acos(-1.0);
+
+bool solve(double x)
+{
+	int num=0;
+	for(int i=0;i<n;i++){
+		num+=a[i]/x;
+	} 
+	if(num>=m+1)return true;
+	else return false;
+}
+
+int main()
+{
+	double t;
+	cin>>n>>m;
+	for(int i=0;i<n;i++){
+		cin>>t;
+		a[i]=pi*t*t;
+		r=max(r,a[i]);
+	}
+	while(r-l>0.00001)
+    {
+        double mid=(l+r)/2;
+        if(solve(mid)) 
+            l=mid;
+        else 
+            r=mid-0.00001;
+    }
+    printf("%.3f\n",l);
+	return 0;
+}
+
+----556B
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+
+const double pi=acos(-1.0);
+// double a[10002];
+int main()
+{
+    int n,m,sum=0;
+    double r=.0,l=0;
+    cin>>n>>m;
+    double* a = new double[n+1];
+    for(int i=1;i<=n;i++)
+      {
+        cin>>a[i];
+        a[i]=pi*a[i]*a[i];
+        r=r>a[i]?r:a[i];
+      }
+    m++;
+    while(l+0.0000001<r)
+      {
+        double mid=(l+r)/2;
+        for(int i=1;i<=n;i++)
+          sum+=a[i]/mid;
+        if(sum>=m) l=mid;
+        else r=mid;
+        sum=0;
+      }
+    printf("%.3lf",l);
+    return 0;
+}
+
+
+****D: 河中跳房子
+----425B
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cmath>
+using namespace std;
+int l,n,m,a[50010];
+bool f(int x)
+{
+	int d=0,cnt=0;
+	for(int i=1;i<=n;i++)
+	{
+		if(a[i]-d<x) cnt++;
+		else d=a[i];
+	}
+	if(l-d<x) cnt++;
+	return cnt<=m;
+}
+int main()
+{
+	cin>>l>>n>>m;
+	for(int i=1;i<=n;i++) cin>>a[i];
+	int le=0,ri=l;
+	while(le+1<ri)
+	{
+		int mid=(le+ri)/2;
+		if(f(mid)) le=mid;
+		else ri=mid;
+	}
+	cout<<le;
+	return 0;
+}
+
+----427B
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cmath>
+using namespace std;
+int l,n,m,a[50010];
+bool f(int x)
+{
+	int d=0,cnt=0;
+	for(int i=1;i<=n;i++)
+	{
+		if(a[i]-d<x) cnt++;
+		else d=a[i];
+	}
+	if(l-d<x) cnt++;
+	return cnt<=m;
+}
+int main()
+{
+	cin>>l>>n>>m;
+	for(int i=1;i<=n;i++) cin>>a[i];
+	int le=0,ri=l;
+	while(le+1<ri)
+	{
+		int mid=(le+ri)/2;
+		if(f(mid)) le=mid;
+		else ri=mid;
+	}
+	cout<<le;
+	return 0;
+}
+
+
+
+----492B
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cmath>
+using namespace std;
+int l, n, m, a[50010];
+bool f(int x)
+{
+	int d = 0, cnt = 0;
+	for (int i = 1; i <= n; i++)
+	{
+		if (a[i] - d < x) cnt++;
+		else d = a[i];
+	}
+	if (l - d < x) cnt++;
+	return cnt <= m;
+}
+int main()
+{
+	cin >> l >> n >> m;
+	for (int i = 1; i <= n; i++) cin >> a[i];
+	int le = 0, ri = l;
+	while (le + 1 < ri)
+	{
+		int mid = (le + ri) / 2;
+		if (f(mid)) le = mid;
+		else ri = mid;
+	}
+	cout << le;
+	return 0;
+}
+

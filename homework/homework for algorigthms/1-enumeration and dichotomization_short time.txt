@@ -1,0 +1,697 @@
+****A: 拨钟问题
+----1ms
+#include<iostream>
+#include<cstring>
+#include<cstdio>
+using namespace std;
+
+int z[10],i[10],sum;
+int main()
+{
+    for(int j=1;j<=9;j++)scanf("%d",&z[j]);
+    for(i[1]=0;i[1]<4;i[1]++)
+        for(i[2]=0;i[2]<4;i[2]++)
+            for(i[3]=0;i[3]<4;i[3]++) 
+            {
+                i[4]=(4-(z[1]+i[1]+i[2])%4)%4; 
+                i[5]=(4-(z[2]+i[1]+i[2]+i[3])%4)%4; 
+                i[6]=(4-(z[3]+i[2]+i[3])%4)%4;
+                i[7]=(4-(z[4]+i[1]+i[4]+i[5])%4)%4;  
+                i[9]=(4-(z[6]+i[3]+i[5]+i[6])%4)%4;
+                i[8]=(4-(z[8]+i[5]+i[7]+i[9])%4)%4; 
+                sum=0;
+                sum+=(z[1]+i[1]+i[2]+i[4])%4; 
+                sum+=(z[2]+i[1]+i[2]+i[3]+i[5])%4;
+                sum+=(z[3]+i[2]+i[3]+i[6])%4;
+                sum+=(z[4]+i[1]+i[4]+i[5]+i[7])%4;
+                sum+=(z[5]+i[1]+i[3]+i[5]+i[7]+i[9])%4;
+                sum+=(z[6]+i[3]+i[5]+i[6]+i[9])%4;
+                sum+=(z[7]+i[4]+i[7]+i[8])%4;
+                sum+=(z[8]+i[5]+i[7]+i[8]+i[9])%4;
+                sum+=(z[9]+i[6]+i[8]+i[9])%4;
+                if(sum==0){for(int j=1;j<=9;j++)while(i[j]--)printf("%d ",j);return 0;}
+            	// 
+		
+		}
+}
+
+
+----1ms
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+//0,1,2,3,4,5,6,7,8
+//A,B,C,D,E,F,G,H,I
+int clocks[9] = { 0 };
+
+int steps[9] = { 0 };//每种操作对应的操作次数
+
+/*
+1         ABDE
+2         ABC
+3         BCEF
+4         ADG
+5         BDEFH
+6         CFI
+7         DEGH
+8         GHI
+9         EFHI
+*/
+
+//利用约束关系求出其余操作所需最小次数
+void check_road(int i1, int i2, int i3) {
+	int i4 = (4 - ((i1 + i2 + clocks[0]) % 4)) % 4;//A
+	int i5 = (4 - ((i1 + i2 + i3 + clocks[1]) % 4)) % 4;//B
+	int i6 = (4 - ((i2 + i3 + clocks[2]) % 4)) % 4;//C
+	int i7 = (4 - ((i1 + i4 + i5 + clocks[3]) % 4)) % 4;//D
+	int i9 = (4 - ((i1 + i3 + i5 + i7 + clocks[4]) % 4)) % 4;//E
+	int i8 = (4 - ((i6 + i9 + clocks[8]) % 4)) % 4;//I
+	//F,G,H
+	if (//满足题目要求，全为12点
+		(clocks[5] + i3 + i5 + i6 + i9) % 4 == 0 &&//F
+		(clocks[6] + i4 + i7 + i8) % 4 == 0 &&//G
+		(clocks[7] + i5 + i7 + i8 + i9) % 4 == 0//H
+		) {
+
+		int tmp[9] = { i1,i2,i3,i4,i5,i6,i7,i8,i9 };
+		int sum = 0, ans = 0;
+		for (int i = 0; i < 9; ++i)
+			sum += tmp[i], ans += steps[i];
+
+		if (sum < ans)//取总的路径数最小的
+			memcpy(steps, tmp, sizeof(steps));
+	}
+}
+
+//i1,i2,i3
+void find() {
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			for (int k = 0; k < 4; ++k) {
+				check_road(i, j, k);
+			}
+		}
+	}
+}
+
+int main() {
+	for (int i = 0; i < 9; ++i)
+		cin >> clocks[i], steps[i] = 4;//初始化为一个比4大的
+
+	find();
+
+	for (int i = 0; i < 9; ++i)
+		while(steps[i]--)//按顺序依次输出步数大于0的步骤
+			cout << i + 1 << ' ';
+
+	return 0;
+}
+
+
+----1ms
+#include <bits/stdc++.h>
+#define mem(a,n) memset(a,n,sizeof(a))
+typedef unsigned long long ull;
+using namespace std;
+
+//用于改变时钟的状态,index为操作编号,n为操作次数
+void turn(int clk2[],int index,int n)
+{
+    switch(index)
+    {
+    case 1://ABDE
+        clk2[1]=(clk2[1]+n)%4;
+        clk2[2]=(clk2[2]+n)%4;
+        clk2[4]=(clk2[4]+n)%4;
+        clk2[5]=(clk2[5]+n)%4;
+        break;
+    case 2://ABC
+        clk2[1]=(clk2[1]+n)%4;
+        clk2[2]=(clk2[2]+n)%4;
+        clk2[3]=(clk2[3]+n)%4;
+        break;
+    case 3://BCEF
+        clk2[2]=(clk2[2]+n)%4;
+        clk2[3]=(clk2[3]+n)%4;
+        clk2[5]=(clk2[5]+n)%4;
+        clk2[6]=(clk2[6]+n)%4;
+        break;
+    case 4://ADG
+        clk2[1]=(clk2[1]+n)%4;
+        clk2[4]=(clk2[4]+n)%4;
+        clk2[7]=(clk2[7]+n)%4;
+        break;
+    case 5://BDEFH
+        clk2[2]=(clk2[2]+n)%4;
+        clk2[4]=(clk2[4]+n)%4;
+        clk2[5]=(clk2[5]+n)%4;
+        clk2[6]=(clk2[6]+n)%4;
+        clk2[8]=(clk2[8]+n)%4;
+        break;
+    case 6://CFI
+        clk2[3]=(clk2[3]+n)%4;
+        clk2[6]=(clk2[6]+n)%4;
+        clk2[9]=(clk2[9]+n)%4;
+        break;
+    case 7://DEGH
+        clk2[4]=(clk2[4]+n)%4;
+        clk2[5]=(clk2[5]+n)%4;
+        clk2[7]=(clk2[7]+n)%4;
+        clk2[8]=(clk2[8]+n)%4;
+        break;
+    case 8://GHI
+        clk2[7]=(clk2[7]+n)%4;
+        clk2[8]=(clk2[8]+n)%4;
+        clk2[9]=(clk2[9]+n)%4;
+        break;
+    case 9://EFHI
+        clk2[5]=(clk2[5]+n)%4;
+        clk2[6]=(clk2[6]+n)%4;
+        clk2[8]=(clk2[8]+n)%4;
+        clk2[9]=(clk2[9]+n)%4;
+        break;
+    }
+}
+//判断时钟最终状态是否符合
+bool judge(int clk2[])
+{
+    for(int i=1;i<10;i++)
+    {
+        if(clk2[i]) return 0;
+    }
+    return 1;
+}
+//打印结果
+void print_res(int res[])
+{
+    for(int i=1;i<10;i++)
+        for(int j=0;j<res[i];j++)
+            cout<<i<<" ";
+}
+//获取总操作的次数
+int get_len(int ans[])
+{
+    int len=0;
+    for(int i=1;i<10;i++)
+    {
+        len+=ans[i];
+    }
+    return len;
+}
+//比较两个操作的大小
+//方法：从前往后比较各个操作的次数
+//若有一种操作次数不同，那么操作次数少的那种答案更小
+//调用该函数的前提是两种答案的总次数一样
+bool compare(int a[],int b[])
+{
+    for(int i=1;i<10;i++)
+    {
+        if(a[i]>b[i]) return 1;
+        if(a[i]<b[i]) return 0;
+    }
+    return 0;
+}
+int main()
+{
+    int clk1[10],clk2[10],ans[10],result[10],len=100;
+    for(int i=1;i<10;i++) cin>>clk1[i];
+    for(ans[1]=0;ans[1]<4;++ans[1])
+    {
+        for(ans[2]=0;ans[2]<4;++ans[2])
+        {
+            for(ans[3]=0;ans[3]<4;++ans[3])
+            {
+                memcpy(clk2,clk1,sizeof(clk1));
+                turn(clk2,1,ans[1]);
+                turn(clk2,2,ans[2]);
+                turn(clk2,3,ans[3]);
+                ans[4]=(4-clk2[1])%4;turn(clk2,4,ans[4]);
+                ans[5]=(4-clk2[2])%4;turn(clk2,5,ans[5]);
+                ans[6]=(4-clk2[3])%4;turn(clk2,6,ans[6]);
+                ans[7]=(4-clk2[4])%4;turn(clk2,7,ans[7]);
+                ans[8]=(4-clk2[7])%4;turn(clk2,8,ans[8]);
+                ans[9]=(4-clk2[5])%4;turn(clk2,9,ans[9]);
+                if(judge(clk2))
+                {
+                    int temp_len=get_len(ans);
+                    //比较大小的方法：
+                    //1.若长度比原答案长，肯定大于原答案
+                    //2.若长度和原答案一样，调用函数进行比较
+                    //3.若长度比原答案小，则替换为原答案
+                    if(temp_len<len||(temp_len==len&&compare(ans,result)))
+                    {
+                        len=temp_len;
+                        memcpy(result,ans,sizeof(ans));
+                    }
+                }
+            }
+        }
+    }
+    print_res(result);
+    return 0;
+}
+
+
+
+****B: 特殊密码锁
+----1ms
+#include<bits/stdc++.h>
+using namespace std;
+char a0[35], tar[35], tmp[35];
+bool flag = 0;
+void flip(char a[], int i){
+    if(a[i] == '0')
+        a[i] = '1';
+    else
+        a[i] = '0';
+}
+void operate(char a[], int k, int len){
+    flip(a, k);
+    if(k > 0)
+        flip(a, k - 1);
+    if( k < len - 1)
+        flip(a, k + 1);
+}
+int main(){
+    cin >> a0 >> tar;
+    int l = strlen(a0), n1 = 0, n2 = 0;
+    for (int j = 0; j < 2; j++){
+        memcpy(tmp, a0, sizeof(a0));
+        if(j){
+            operate(tmp, 0, l);
+            n1++;
+            for (int i = 1; i < l; i++)
+                if(tar[i - 1] != tmp[i - 1])
+                    operate(tmp, i, l), n1++;
+            if(tmp[l - 1] == tar[l - 1])
+                flag = 1;
+        }
+        else{
+            for (int i = 1; i < l; i++)
+                if(tar[i - 1] != tmp[i - 1])
+                    operate(tmp, i, l), n2++;
+            if(tmp[l - 1] == tar[l - 1])
+                flag = 1;
+        }
+    }
+    if(flag)
+        cout << min(n1, n2) << endl;
+    else
+        cout << "impossible" << endl;
+    
+}
+
+----1ms
+#include<cstdio>
+#include<iostream>
+#include<cstring>
+using namespace std;
+char d[100];
+char p[100];
+char q[100];
+int n;
+void flip(int i)
+{
+	if (i == 0)
+	{
+		p[0] = (p[0] - '0' + 1) % 2+'0';
+		p[1] = (p[1] - '0' + 1) % 2 + '0';
+	}
+	else if (i == n)
+	{
+		p[n] = (p[n] - '0' + 1) % 2 + '0';
+		p[n-1] = (p[n-1] - '0' + 1) % 2 + '0';
+	}
+	else
+	{
+		p[i] = (p[i] - '0' + 1) % 2 + '0';
+		p[i - 1] = (p[i - 1] - '0' + 1) % 2 + '0';
+		p[i+ 1] = (p[i+ 1] - '0' + 1) % 2 + '0';
+	}
+}
+int main()
+{
+	int len1=0,len2=0;
+	cin >> d;
+	cin >> q;
+	n = strlen(d);
+	if (n == 1)
+	{
+		if (p[0] == q[0])
+		{
+			cout << '0' << endl;
+		}
+		else
+			cout << '1' << endl;
+	}
+	else
+	{
+		len1 = 1;
+		strcpy(p, d);
+		flip(0);
+		for (int i = 1; i <= n-1; i++)
+		{
+			if (p[i - 1] != q[i - 1])
+			{
+				flip(i);
+				len1++;
+			}
+		}
+		if (p[n - 1] != q[n - 1])
+		{
+			len1 = -1;
+		}
+		len2 = 0;
+		strcpy(p, d);
+		for (int i = 1; i <= n - 1; i++)
+		{
+			if (p[i - 1] != q[i - 1])
+			{
+				flip(i);
+				len2++;
+			}
+		}
+		if (p[n - 1] != q[n - 1])
+		{
+			len2 = -1;
+		}
+		if (len1 == -1 && len2 == -1)
+		{
+			cout << "impossible" << endl;
+		}
+		else if (len1 == -1)
+		{
+			cout << len2 << endl;
+		}
+		else if (len2 == -1)
+		{
+			cout << len1 << endl;
+		}
+		else
+		{
+			cout << min(len1, len2) << endl;
+		}
+	}
+
+}
+
+
+----1ms
+#include<bits/stdc++.h>
+using namespace std;
+string a,b,c;
+int main() {
+    cin>>a>>b;
+    int l=a.length();
+    c=a;
+    int t1=0,t2=1;
+    for (int i=1;i<l;i++) {
+        if (a[i-1]!=b[i-1]) {
+            if (a[i]=='1') a[i]='0';
+            else a[i]='1';
+            if (a[i+1]=='1') a[i+1]='0';
+            else a[i+1]='1';
+            ++t1;
+        }
+    }
+    if (a[l-1]!=b[l-1]) t1=-1;
+    a=c;
+    if (a[0]=='1') a[0]='0';
+        else a[0]='1';
+    if (a[1]=='1') a[1]='0';
+        else a[1]='1';
+    for (int i=1;i<l;i++) {
+        if (a[i-1]!=b[i-1]) {
+            if (a[i]=='1') a[i]='0';
+            else a[i]='1';
+            if (a[i+1]=='1') a[i+1]='0';
+            else a[i+1]='1';
+            ++t2;
+        }
+    }
+    if (a[l-1]!=b[l-1]) t2=-1;
+    if (t1<0&&t2<0) cout<<"impossible";
+    else if (t1*t2==0) cout<<0;
+    else if (t1*t2<0) cout<<max(t1,t2);
+    else cout<<min(t1,t2);
+    return 0;
+}
+
+****C: 派
+----3ms
+#include <iostream>
+using namespace std;
+double l=0,r=0;
+double sz[10010];
+static double PI=3.141592653589793238;
+int main(){
+    int N,F;
+    scanf("%d %d",&N,&F);
+    F++;
+    for (int i = 0; i < N; ++i) {
+        int temp;
+        scanf("%d",&temp);
+        sz[i]=PI*temp*temp;
+        if(sz[i]>r)r=sz[i];
+//        printf("%.5lf\n",sz[i]);
+    }
+    while (r-l>1e-6){
+        double mid=(r+l)/2;
+        int num=0;
+        for (int i = 0; i < N; ++i) {
+            num+=sz[i]/mid;
+        }
+        if(num>=F){
+            l=mid;
+        } else{
+            r=mid;
+        }
+    }
+    printf("%.3lf",l);
+}
+
+
+----3ms
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+const double PI=acos(-1.0);
+
+int find(double a[], int len, double mv){
+    int ans=0;
+    for(int j=0;j<len;j++){
+        ans+=int(a[j]/mv);
+    }
+    return ans;
+}
+int main(){
+    int n,f;
+    scanf("%d%d",&n,&f);
+    double v[n];
+    int b;
+    for(int j=0;j<n;j++){
+        scanf("%d",&b);
+        v[j]=b*b*PI;
+    }
+    double max=v[0];
+    for(int j=1;j<n;j++){
+        if(max<v[j]){
+            max=v[j];
+        }
+    }
+    double right=max;
+    double left=1;
+    double mid;
+    while((right-left)>1e-6){
+        mid=left+(right-left)/2;
+        if(find(v,n,mid)>=f+1){
+            left=mid;
+        }else{
+            right=mid;
+        }
+    }
+    printf("%.3f",mid);
+    return 0;
+}
+
+----3ms
+#include<iostream>
+#include<cstdio>
+using namespace std;
+#define pi  3.141592653589793
+int n,m;
+double p[10010];
+bool check(double x)
+{
+    int num = 0;
+    for(int i = 0;i < n;i++){
+        num += p[i]/x; 
+    }
+    if(num >= m+1)
+        return true;
+    else
+        return false;
+}
+int main()
+{
+    int rid;
+    scanf("%d%d",&n,&m);
+    double r = 0;
+    for(int i = 0;i < n;i++){
+        scanf("%d",&rid);
+        p[i] = pi*rid*rid;
+        if(p[i]>r)
+            r = p[i];
+    }
+    double l = 0;
+    double ans;
+    while(r - l >0.000001){
+        double mid = (l+r)/2;
+        if(check(mid)){
+            ans = mid;
+            l = mid;
+        }
+        else
+            r = mid;
+    }
+    printf("%.3lf",ans);
+    return 0;
+}
+
+****D: 河中跳房子
+----10ms
+#include <iostream>
+#include<cstring>
+#include<string>
+#include<cstdio>
+using namespace std;
+
+int ri[50020];
+
+int main()
+{
+	int l, r, n, m, ll;
+	int i, j, mid;
+	int an;
+	scanf("%d%d%d", &ll, &n, &m);
+	for (i = 1; i <= n; i++) {
+		scanf("%d", &ri[i]);
+	}
+	ri[0] = 0;
+	ri[n + 1] = ll;
+	l = 0; r = ll + 1;
+	while (l + 1 < r) {
+		mid = (l + r) / 2;
+		an = 0;
+		i = 0;
+		while (i <= n) {
+			j = i + 1;
+			while (ri[j] - ri[i] < mid && j <= n + 1)
+				j++;
+			an += j - i - 1;
+			i = j;
+		}
+		if (an <= m)l = mid;
+		else r = mid;
+	}
+	printf("%d\n", l);
+	return 0;
+}
+
+----10ms
+#include<stdio.h>
+#include<queue>
+#include<math.h>
+#include<string.h>
+#include<iostream>
+#include<stdlib.h>
+#include<algorithm>
+
+using namespace std;
+int base;
+int top,mid;
+int L,N,M;
+int nodes[50010];
+bool find(int dis){
+    int now=0,num=0;
+    for(int i=1;i<=N+1;i++){
+        if(nodes[i]-nodes[now]>=dis){
+            num++;
+            now=i;
+        }
+    }
+    if(num>N-M){
+        return true;
+    }
+    return false;
+
+
+}
+int main(){
+    scanf("%d %d %d",&L,&N,&M);
+    memset(nodes,0,sizeof(nodes));
+
+    for(int i=1;i<=N;i++){
+        scanf("%d",&nodes[i]);
+    }
+    nodes[N+1]=L;
+    base=1;
+    top=L;
+    int ans=0;
+    while(base<=top){
+        mid=(base+top)/2;
+        if(find(mid)){
+            ans=mid;
+            base=mid+1;
+        }else{
+            top=mid-1;
+        }
+    }
+    cout<<ans<<endl;
+}
+
+----10ms
+#include<bits/stdc++.h>
+using namespace std;
+
+int L,N,M;//总长为L，N个石头，移走M块
+int rock[50010];
+//证明一下为什么求的是上界：比如当最短距离是4时，需要移走2块，
+//当最短距离是5时，需要移走3块，但此时实际上的最短距离已经是6了
+//也就是移走3块时真正的最短距离。如果再增加到7，就需要移走4块了。
+ 
+int move(int len) {//最短距离是len，说明任意两块石头之间的距离都>=len 
+	int now=0,next=1,sum=0;
+	while(next<=N+1) {
+		if(rock[next]-rock[now]<len) {//如果可以跳到下一块石头 
+			sum++;//则说明下一块石头要被移走(如果下一块石头是最后一块，则移走now)
+			next++;//继续判断能否跳到下一块石头 
+		} 
+		else {
+			now=next;//重新开始判断 
+			next++;
+		}
+	}
+	return sum;
+}
+int main() {
+	
+	scanf("%d%d%d",&L,&N,&M);
+	rock[N+1]=L;
+	for(int i=1; i<=N; i++) scanf("%d",&rock[i]);
+
+	int l=1,r=L+1;
+	while(l<r){
+		int mid=l+(r-l)/2;
+		int t=move(mid);
+		if(t<=M) l=mid+1;
+		else r=mid;
+	}
+	printf("%d",l-1);
+	
+	return 0;
+}
+
+
