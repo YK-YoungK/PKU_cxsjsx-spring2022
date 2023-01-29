@@ -4,6 +4,8 @@
 
 - midterm exam(incomplete)：2015 - 2018年程序设计实习期中考试的参考解答，与2019 - 2022年程序设计实习期中考试填空题的参考解答。其中2022年的参考解答是本人在考场上提交的AC代码，由于能力所限未能完成所有题目。所有过往考试均可在 http://cxsjsx.openjudge.cn/contests/past 中查询到相应的比赛。
 - final exam(incomplete)：2016 - 2022年程序设计实习期末考试的参考解答。其中2022年的参考解答是本人在考场上提交的AC代码，由于能力所限未能完成所有题目。所有过往考试均可在 http://cxsjsx.openjudge.cn/contests/past 中查询到相应的比赛。
+  - 2023.1.29更新：添加2022年期末考试第8题解答，from cgl。
+
 - homework：2022年春程序设计实习openjudge平台作业与图像旋转作业的参考解答。所有openjudge平台作业均可在 http://cxsjsx.openjudge.cn/contests/past 中查询到相应的比赛。
 - Qt：2022年春季，程序设计实习课程的大作业由原先的组队botzone比赛变更为组队Qt项目。这是2022年春季程序设计实习课程上对Qt的讲授资料。
 
